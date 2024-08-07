@@ -34,8 +34,8 @@ def scrape__picks_pickswise():
         for game in picks_data:
             for pick in game.get('basePicks', []):
                 formatted_pick = {
-                    'away_team_nickname': pick.get('awayTeam', {}).get('nickname', 'N/A'),
-                    'home_team_nickname': pick.get('homeTeam', {}).get('nickname', 'N/A'),
+                    'away_team_name': pick.get('awayTeam', {}).get('name', 'N/A'),
+                    'home_team_name': pick.get('homeTeam', {}).get('name', 'N/A'),
                     'market': pick.get('market', 'N/A'),
                     'outcome': pick.get('outcome', 'N/A'),
                     'reasoning': pick.get('reasoning', 'N/A')
@@ -43,11 +43,11 @@ def scrape__picks_pickswise():
                 formatted_picks.append(formatted_pick)
 
         # Debug output
-        # print(f"{len(formatted_picks)} picks scraped from Pickswise.")
-        # print(json.dumps(formatted_picks, indent=4))
-        result_json = json.dumps(formatted_picks, indent=4)
+        print(f"{len(formatted_picks)} picks scraped from Pickswise.")
+        print(json.dumps(formatted_picks, indent=4))
+        #result_json = json.dumps(formatted_picks, indent=4)
 
-        return result_json
+        #return result_json
 
     except requests.RequestException as e:
         print(f"Request failed: {e}")
