@@ -43,11 +43,11 @@ def scrape__picks_pickswise():
                 formatted_picks.append(formatted_pick)
 
         # Debug output
-        print(f"{len(formatted_picks)} picks scraped from Pickswise.")
-        print(json.dumps(formatted_picks, indent=4))
-        #result_json = json.dumps(formatted_picks, indent=4)
+        # print(f"{len(formatted_picks)} picks scraped from Pickswise.")
+        # print(json.dumps(formatted_picks, indent=4))
+        result_json = json.dumps(formatted_picks, indent=4)
 
-        #return result_json
+        return result_json
 
     except requests.RequestException as e:
         print(f"Request failed: {e}")
