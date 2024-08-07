@@ -26,6 +26,7 @@ def scrape__picks_pickswise():
 
         if not picks_data:
             print("No picks found.")
+
             return
         
         # Extract relevant information
@@ -41,8 +42,12 @@ def scrape__picks_pickswise():
                 }
                 formatted_picks.append(formatted_pick)
 
-        print(f"{len(formatted_picks)} picks scraped from Pickswise.")
-        print(json.dumps(formatted_picks, indent=4))
+        # Debug output
+        # print(f"{len(formatted_picks)} picks scraped from Pickswise.")
+        # print(json.dumps(formatted_picks, indent=4))
+        result_json = json.dumps(formatted_picks, indent=4)
+
+        return result_json
 
     except requests.RequestException as e:
         print(f"Request failed: {e}")
@@ -53,3 +58,5 @@ def scrape__picks_pickswise():
 def scrape_pickswise():
     scrape__picks_pickswise()
     #Add scrape method for player props
+
+scrape_pickswise()
