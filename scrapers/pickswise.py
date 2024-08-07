@@ -2,7 +2,7 @@ import requests
 import os
 import json
 
-def scrape_pickswise():
+def scrape__picks_pickswise():
     url = 'https://www.pickswise.com/_next/data/mH9ttVCAg7OXa5acQnTfn/_sport/nfl/picks.json?pageSlug=%2Fnfl%2Fpicks%2F&sport=nfl'
 
     params = {
@@ -50,4 +50,6 @@ def scrape_pickswise():
     except Exception as e:
         print(f"An error occured: {e}")
 
-scrape_pickswise()
+def scrape_pickswise():
+    scrape__picks_pickswise()
+    #Add scrape method for player props
