@@ -49,7 +49,7 @@ def scrape__picks_wagertalk(dbInfo):
         collection = db['scraped_picks']
         collection.insert_many(picks)
 
-        print(f"Inserted {len(picks)} records into MongoDB.")
+        print(f"Inserted {len(picks)} records into MongoDB from wagertalk.com")
 #
         # picks_json = json.dumps(picks, indent=4)
 

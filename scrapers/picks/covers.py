@@ -60,7 +60,7 @@ def scrape_picks_covers(dbInfo):
         collection = db['scraped_picks']
         collection.insert_many(picks_data)
 
-        print(f"Inserted {len(picks_data)} records into MongoDB.")
+        print(f"Inserted {len(picks_data)} records into MongoDB from Covers.com")
 
     except requests.RequestException as e:
         print(f"Request failed: {e}")

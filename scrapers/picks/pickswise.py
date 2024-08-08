@@ -47,7 +47,7 @@ def scrape__picks_pickswise(dbInfo):
         collection = db['scraped_picks']
         collection.insert_many(formatted_picks)
 
-        print(f"Inserted {len(formatted_picks)} records into MongoDB.")
+        print(f"Inserted {len(formatted_picks)} records into MongoDB from pickswise.com")
         # Debug output
         # print(f"{len(formatted_picks)} picks scraped from Pickswise.")
         # print(json.dumps(formatted_picks, indent=4))

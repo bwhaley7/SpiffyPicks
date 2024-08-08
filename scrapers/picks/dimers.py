@@ -79,7 +79,7 @@ def scrape_dimers(dbInfo):
         collection = db['scraped_picks']
         collection.insert_many(games)
 
-        print(f"Inserted {len(games)} records into MongoDB.")
+        print(f"Inserted {len(games)} records into MongoDB from Dimers.com")
 
         # Convert the list of games to JSON format and print it
         # games_json = json.dumps(games, indent=4)
