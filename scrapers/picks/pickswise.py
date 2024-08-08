@@ -28,14 +28,27 @@ def scrape__picks_pickswise(dbInfo):
 
             return
         
-        # Extract relevant information
         formatted_picks = []
         for game in picks_data:
+            start_time_string = game.get('startTimeString', 'N/A')
+            if start_time_string != 'N/A':
+                try:
+                    # Convert the startTimeString to a datetime object
+                    parsed_date = datetime.strptime(start_time_string, "%Y-%m-%dT%H:%M:%S%z")
+                    # Extract only the date (YYYY-MM-DD)
+                    date_only = parsed_date.date().isoformat()
+                except ValueError:
+                    date_only = 'Invalid date format'
+            else:
+                date_only = 'N/A'
+
+            # Access the basePicks within each game
             for pick in game.get('basePicks', []):
                 formatted_pick = {
                     'away_team_name': pick.get('awayTeam', {}).get('name', 'N/A'),
                     'home_team_name': pick.get('homeTeam', {}).get('name', 'N/A'),
                     'market': pick.get('market', 'N/A'),
+                    'date': date_only,  # Use the converted ISO 8601 date from startTimeString
                     'outcome': pick.get('outcome', 'N/A'),
                     'reasoning': pick.get('reasoning', 'N/A'),
                     'site': "pickswise.com",
