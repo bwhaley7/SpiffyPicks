@@ -32,7 +32,7 @@ def scrape_fantasypros_projections(dbInfo, week):
             player_data = {
                 'name': player.get('name'),
                 'position_id': player.get('position_id'),
-                'team_id': player.get('team_id'),
+                'team': player.get('team_id'),
                 'projected stats': {
                     'points': player.get('stats', {}).get('points'),
                     'points_ppr': player.get('stats', {}).get('points_ppr'),
