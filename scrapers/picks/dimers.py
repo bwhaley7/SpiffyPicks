@@ -60,10 +60,17 @@ def scrape_dimers(dbInfo):
                 aggregated_best_bets = replace_bet_team_name(aggregated_best_bets, away_team_name, home_team_name)
                 aggregated_best_parlay = replace_bet_team_name(aggregated_best_parlay, away_team_name, home_team_name)
 
+                # Convert the date to ISO format (YYYY-MM-DD)
+                try:
+                    parsed_date = datetime.strptime(match_data.get("Date", ""), "%Y-%m-%dT%H:%M:%SZ")
+                    date_iso = parsed_date.strftime("%Y-%m-%d")
+                except ValueError:
+                    date_iso = match_data.get("Date", "")  # Use the original date if parsing fails
+
                 game_info = {
                     "away_team": away_team_name,
                     "home_team": home_team_name,
-                    "date": match_data.get("Date"),
+                    "date": date_iso,  # Use the converted ISO date
                     "venue": match_data.get("Venue"),
                     "pred_away_score": pre_data.get("PredAwayScore"),
                     "pred_home_score": pre_data.get("PredHomeScore"),
