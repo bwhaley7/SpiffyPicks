@@ -1,5 +1,6 @@
 import requests
 import re
+import pytz
 from lxml import html
 from pymongo import MongoClient
 from datetime import datetime
@@ -8,11 +9,10 @@ def scrape__picks_wagertalk(dbInfo):
     url = 'https://www.wagertalk.com/free-sports-picks/nfl'
 
     try:
-        # Send GET request to the URL
-        response = requests.get(url)
-        response.raise_for_status()  # Raise an exception for HTTP errors
 
-        # Parse the HTML content
+        response = requests.get(url)
+        response.raise_for_status() 
+
         tree = html.fromstring(response.content)
 
         # Define the XPath expressions
@@ -20,29 +20,43 @@ def scrape__picks_wagertalk(dbInfo):
         datetime_xpath = '/html[1]/body[1]/div[2]/div[1]/section[3]/div[1]/main[1]/section/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[2]'
         play_xpath = '/html[1]/body[1]/div[2]/div[1]/section[3]/div[1]/main[1]/section/div[1]/div[1]/div[2]/div[1]/div[2]/div[2]/div[2]'
 
-        # Extract data using XPath
         events = tree.xpath(event_xpath)
         datetimes = tree.xpath(datetime_xpath)
         plays = tree.xpath(play_xpath)
 
-        # Prepare list to store the extracted picks
         picks = []
 
-        # Loop through each event and corresponding datetime and play
-        for event, datetime, play in zip(events, datetimes, plays):
+        for event, dateandtime, play in zip(events, datetimes, plays):
             event_text = event.text_content().strip()
-            datetime_text = datetime.text_content().strip()
+            dateandtime_text = dateandtime.text_content().strip()
             play_text = play.text_content().strip()
 
             event_text_clean = re.sub(r'\(\d+\)', '', event_text).strip()
+
+            try:
+                # Clean up the date and time text
+                dateandtime_text_clean = dateandtime_text.replace('EDT', '').strip()
+
+                # Convert to datetime object
+                parsed_date = datetime.strptime(dateandtime_text_clean, '%b %d, %Y %I:%M %p')
+                
+                # Add the timezone (EDT)
+                eastern = pytz.timezone('US/Eastern')
+                localized_date = eastern.localize(parsed_date)
+                
+                # Convert to ISO 8601 format (without timezone info for simplicity)
+                iso_date = localized_date.date().isoformat()
+            except ValueError as e:
+                iso_date = f'Invalid date format: {e}'
 
             # Check if the event includes the word "at"
             if "at" in event_text:
                 picks.append({
                     'event': event_text_clean,
-                    'datetime': datetime_text,
+                    'date': iso_date,  # Use the converted ISO date
                     'play': play_text,
-                    'site': 'wagertalk.com'
+                    'site': 'wagertalk.com',
+                    'data_added': datetime.now()
                 })
 
         client = MongoClient(dbInfo)
