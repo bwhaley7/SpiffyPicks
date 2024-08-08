@@ -5,6 +5,7 @@ from picks.dimers import scrape_dimers
 from picks.pickswise import scrape_pickswise
 from picks.wagertalk import scrape_wagertalk
 from projections.sportsline import scrape_sportsline_dfs
+from projections.fantasypros import scrape_fantasypros
 from pymongo import MongoClient
 
 load_dotenv(find_dotenv())
@@ -30,6 +31,7 @@ def run_all_scrapers():
     scrape_pickswise(mongo_db_string)
     scrape_wagertalk(mongo_db_string)
     scrape_sportsline_dfs(mongo_db_string)
+    scrape_fantasypros(mongo_db_string, 1) #number is for the NFL week you are on.
 
 if __name__ == "__main__":
     run_all_scrapers()
