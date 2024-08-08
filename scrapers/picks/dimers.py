@@ -1,5 +1,7 @@
 import requests
 import json
+from pymongo import MongoClient
+from datetime import datetime
 
 def replace_bet_team_name(bets, away_team_name, home_team_name):
     for bet in bets:
@@ -9,7 +11,7 @@ def replace_bet_team_name(bets, away_team_name, home_team_name):
             bet["bet"] = home_team_name
     return bets
 
-def scrape_dimers():
+def scrape_dimers(dbInfo):
     url = 'https://levy-edge.statsinsider.com.au/matches/upcoming?Sport=NFL,WNBA,MLB,MLS,CFB,LMX&days=7&strip=true&best_bets=true&bookmakers=fanduel,betmgm,draftkings,bet_365'
 
     # Headers as specified in your request
@@ -67,16 +69,21 @@ def scrape_dimers():
                     "pred_home_score": pre_data.get("PredHomeScore"),
                     "best_bets": aggregated_best_bets,
                     "best_parlay": aggregated_best_parlay,
-                    "betting_info": aggregated_betting_info
+                    "betting_info": aggregated_betting_info,
+                    "data_added": datetime.now()
                 }
                 games.append(game_info)
 
+        client = MongoClient(dbInfo)
+        db = client['spiffypicks']
+        collection = db['scraped_picks']
+        collection.insert_many(games)
+
+        print(f"Inserted {len(games)} records into MongoDB.")
+
         # Convert the list of games to JSON format and print it
-        games_json = json.dumps(games, indent=4)
-        print(games_json)
+        # games_json = json.dumps(games, indent=4)
+        # print(games_json)
 
     except requests.RequestException as e:
         print(f"Request failed: {e}")
-
-# Run the function
-scrape_dimers()

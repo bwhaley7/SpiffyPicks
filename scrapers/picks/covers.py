@@ -1,9 +1,10 @@
 import requests
-import json
 import re
 from lxml import html
+from datetime import datetime
+from pymongo.mongo_client import MongoClient
 
-def scrape_picks_covers():
+def scrape_picks_covers(dbInfo):
     url = 'https://www.covers.com/picks/nfl'
 
     try:
@@ -50,23 +51,21 @@ def scrape_picks_covers():
                 'date': date,
                 'time': time,
                 'pick': pick_text_clean,
-                'explanation': explanation_text_clean
-            })
+                'explanation': explanation_text_clean,
+                'data_added': datetime.now()
+            })  
 
-        # Convert the list of picks to JSON format
-        picks_json = json.dumps(picks_data, indent=4)
-        
-        print(picks_json)
-        # Return the JSON string
-        #return picks_json
+        client = MongoClient(dbInfo)
+        db = client['spiffypicks']
+        collection = db['scraped_picks']
+        collection.insert_many(picks_data)
 
+        print(f"Inserted {len(picks_data)} records into MongoDB.")
 
     except requests.RequestException as e:
         print(f"Request failed: {e}")
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def scrape_covers():
-    scrape_picks_covers()
-
-scrape_covers()
+def scrape_covers(dbInfo):
+    scrape_picks_covers(dbInfo)

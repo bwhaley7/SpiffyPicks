@@ -1,9 +1,10 @@
 import requests
-import json
 import re
 from lxml import html
+from pymongo import MongoClient
+from datetime import datetime
 
-def scrape__picks_wagertalk():
+def scrape__picks_wagertalk(dbInfo):
     url = 'https://www.wagertalk.com/free-sports-picks/nfl'
 
     try:
@@ -42,10 +43,17 @@ def scrape__picks_wagertalk():
                     'datetime': datetime_text,
                     'play': play_text
                 })
-#
-        picks_json = json.dumps(picks, indent=4)
 
-        print(picks_json)
+        client = MongoClient(dbInfo)
+        db = client['spiffypicks']
+        collection = db['scraped_picks']
+        collection.insert_many(picks)
+
+        print(f"Inserted {len(picks)} records into MongoDB.")
+#
+        # picks_json = json.dumps(picks, indent=4)
+
+        # print(picks_json)
 
     except requests.RequestException as e:
         print(f"Request failed: {e}")
@@ -53,8 +61,6 @@ def scrape__picks_wagertalk():
         print(f"An error occurred: {e}")
 
 
-def scrape_wagertalk():
-    scrape__picks_wagertalk()
+def scrape_wagertalk(dbInfo):
+    scrape__picks_wagertalk(dbInfo)
     #Add scrape method for player props
-
-scrape_wagertalk()
