@@ -41,7 +41,8 @@ def scrape__picks_wagertalk(dbInfo):
                 picks.append({
                     'event': event_text_clean,
                     'datetime': datetime_text,
-                    'play': play_text
+                    'play': play_text,
+                    'site': 'wagertalk.com'
                 })
 
         client = MongoClient(dbInfo)

@@ -52,6 +52,7 @@ def scrape_picks_covers(dbInfo):
                 'time': time,
                 'pick': pick_text_clean,
                 'explanation': explanation_text_clean,
+                'site': "Covers.com",
                 'data_added': datetime.now()
             })  
 

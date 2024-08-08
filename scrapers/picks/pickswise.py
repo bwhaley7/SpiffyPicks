@@ -38,6 +38,7 @@ def scrape__picks_pickswise(dbInfo):
                     'market': pick.get('market', 'N/A'),
                     'outcome': pick.get('outcome', 'N/A'),
                     'reasoning': pick.get('reasoning', 'N/A'),
+                    'site': "pickswise.com",
                     'data_added': datetime.now()
                 }
                 formatted_picks.append(formatted_pick)

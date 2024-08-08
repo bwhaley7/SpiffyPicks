@@ -70,6 +70,7 @@ def scrape_dimers(dbInfo):
                     "best_bets": aggregated_best_bets,
                     "best_parlay": aggregated_best_parlay,
                     "betting_info": aggregated_betting_info,
+                    "site": "Dimers.com",
                     "data_added": datetime.now()
                 }
                 games.append(game_info)
