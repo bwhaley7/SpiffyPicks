@@ -37,8 +37,12 @@ def scrape_picks_covers(dbInfo):
 
             date_time_match = date_time_pattern.search(matchup_text_clean)
             if date_time_match:
-                date = date_time_match.group(1)
-                time = date_time_match.group(2)
+                date_str = date_time_match.group(1)  # "MM/DD/YYYY"
+                time_str = date_time_match.group(2)
+                
+                # Convert date to ISO format "YYYY-MM-DD"
+                date_iso = datetime.strptime(date_str, "%m/%d/%Y").strftime("%Y-%m-%d")
+                
                 # Remove date/time from the matchup text
                 matchup_text_clean = date_time_pattern.sub('', matchup_text_clean).strip()
 
@@ -48,8 +52,8 @@ def scrape_picks_covers(dbInfo):
 
             picks_data.append({
                 'matchup': matchup_text_clean,
-                'date': date,
-                'time': time,
+                'date': date_iso,  # Use the converted ISO format date
+                'time': time_str,
                 'pick': pick_text_clean,
                 'explanation': explanation_text_clean,
                 'site': "Covers.com",
