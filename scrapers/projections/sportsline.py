@@ -46,6 +46,7 @@ def scrape_sportsline_dfs(dbInfo):
                 "projected_passing_yards": pass_yds[i].text_content().strip(),
                 "projected_rushing_yards": rush_yds[i].text_content().strip(),
                 "projected_receiving_yards": rec_yds[i].text_content().strip(),
+                "site": "sportsline.com",
                 "data_added": datetime.now()
             }
             projections.append(projection)

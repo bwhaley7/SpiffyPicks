@@ -48,7 +48,8 @@ def scrape_fantasypros_projections(dbInfo, week):
                     'fumbles': player.get('stats', {}).get('fumbles'),
                     'ret_tds': player.get('stats', {}).get('ret_tds'),
                     '2pt_tds': player.get('stats', {}).get('2pt_tds')
-                }
+                },
+                "site": "fantasypros.com"
             }
             projection_data.append(player_data)
 
