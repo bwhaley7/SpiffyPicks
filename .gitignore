@@ -1,6 +1,9 @@
 scrapers/picks/__pycache__/
 scrapers/projections/__pycache__/
+scrapers/articles/__pycache__/
 scrapers/.env
 scrapers/test.py
 first_matchup_page.html
 to-add.txt
+article_debug.html
+scraped_data_output.txt
