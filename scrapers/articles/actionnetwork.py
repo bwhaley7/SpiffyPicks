@@ -60,6 +60,7 @@ def scrape_page_articles():
                 'article': article_text,
                 'url': href,
                 'date': date_iso,
+                'site': "Actionnetwork.com",
                 'scraped_at': datetime.now().isoformat()
             }
 
