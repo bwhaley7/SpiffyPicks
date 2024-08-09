@@ -63,6 +63,7 @@ def scrape__picks_wagertalk(dbInfo):
         db = client['spiffypicks']
         collection = db['scraped_picks']
         collection.insert_many(picks)
+        client.close()
 
         print(f"Inserted {len(picks)} records into MongoDB from wagertalk.com")
 #

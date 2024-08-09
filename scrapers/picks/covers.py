@@ -64,6 +64,7 @@ def scrape_picks_covers(dbInfo):
         db = client['spiffypicks']
         collection = db['scraped_picks']
         collection.insert_many(picks_data)
+        client.close()
 
         print(f"Inserted {len(picks_data)} records into MongoDB from Covers.com")
 

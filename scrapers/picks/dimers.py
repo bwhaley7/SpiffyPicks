@@ -86,6 +86,7 @@ def scrape_dimers(dbInfo):
         db = client['spiffypicks']
         collection = db['scraped_picks']
         collection.insert_many(games)
+        client.close()
 
         print(f"Inserted {len(games)} records into MongoDB from Dimers.com")
 

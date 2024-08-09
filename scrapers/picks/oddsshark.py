@@ -115,6 +115,7 @@ def scrape_matchup_data(matchup_link, dbInfo):
                 db = client['spiffypicks']
                 collection = db['scraped_picks']
                 collection.insert_one(game_data)
+                client.close()
             else:
                 print("Did not contain numbers. Invalid.")
         else:

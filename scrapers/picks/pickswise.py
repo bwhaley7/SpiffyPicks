@@ -60,6 +60,7 @@ def scrape__picks_pickswise(dbInfo):
         db = client['spiffypicks']
         collection = db['scraped_picks']
         collection.insert_many(formatted_picks)
+        client.close()
 
         print(f"Inserted {len(formatted_picks)} records into MongoDB from pickswise.com")
         # Debug output
