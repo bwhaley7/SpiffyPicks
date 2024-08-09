@@ -24,6 +24,8 @@ def scrape_fantasypros_projections(dbInfo, week):
 
         data = response.json()
 
+        count = 0
+
         player_projections = data.get('players', [])
 
         projection_data = []
@@ -51,14 +53,16 @@ def scrape_fantasypros_projections(dbInfo, week):
                 },
                 "site": "fantasypros.com"
             }
-            projection_data.append(player_data)
+            if player.get('stats', {}).get('points') > 1:
+                projection_data.append(player_data)
+                count+=1
 
         client = MongoClient(dbInfo)
         db = client['spiffypicks']
         collection = db['scraped_projections']
         collection.insert_many(projection_data)
         
-        print(f"{len(player_projections)} player projections added for week {week} from fantasypros.com")
+        print(f"{count} player projections added for week {week} from fantasypros.com")
 
 
     except requests.RequestException as e:
