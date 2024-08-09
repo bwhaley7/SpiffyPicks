@@ -8,6 +8,7 @@ from picks.oddsshark import scrape_oddsshark
 from projections.sportsline import scrape_sportsline_dfs
 from projections.fantasypros import scrape_fantasypros
 from articles.actionnetwork import scrape_action_articles
+from articles.coversArticles import scrape_covers_articles
 from pymongo import MongoClient
 
 load_dotenv(find_dotenv())
@@ -28,16 +29,17 @@ def run_all_scrapers():
 
     result = collection.delete_many({})
     result2 = collection2.delete_many({})
-    result3 = collection.delete_many({})
+    result3 = collection3.delete_many({})
 
-    #scrape_covers(mongo_db_string)
-    #scrape_dimers(mongo_db_string)
-    #scrape_pickswise(mongo_db_string)
-    #scrape_wagertalk(mongo_db_string)
-    #scrape_oddsshark(mongo_db_string)
-    #scrape_sportsline_dfs(mongo_db_string)
-    #scrape_fantasypros(mongo_db_string, 1) #number is for the NFL week you are on.
+    scrape_covers(mongo_db_string)
+    scrape_dimers(mongo_db_string)
+    scrape_pickswise(mongo_db_string)
+    scrape_wagertalk(mongo_db_string)
+    scrape_oddsshark(mongo_db_string)
+    scrape_sportsline_dfs(mongo_db_string)
+    scrape_fantasypros(mongo_db_string, 1) #number is for the NFL week you are on.
     scrape_action_articles(mongo_db_string)
+    scrape_covers_articles(mongo_db_string)
 
 if __name__ == "__main__":
     run_all_scrapers()
