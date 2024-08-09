@@ -108,6 +108,8 @@ def scrape_matchup_data(matchup_link, dbInfo):
                 game_data['last10head2head'] = table_data
                 game_data['gameTrends'] = trend1_data + trend2_data
                 game_data['date'] = iso_date
+                game_data['site'] = "Oddsshark.com"
+                game_data['data_added'] = datetime.now()
 
                 client = MongoClient(dbInfo)
                 db = client['spiffypicks']
