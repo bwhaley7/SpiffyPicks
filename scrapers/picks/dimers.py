@@ -12,7 +12,10 @@ def replace_bet_team_name(bets, away_team_name, home_team_name):
     return bets
 
 def scrape_dimers(dbInfo):
-    url = 'https://levy-edge.statsinsider.com.au/matches/upcoming?Sport=NFL,WNBA,MLB,MLS,CFB,LMX&days=7&strip=true&best_bets=true&bookmakers=fanduel,betmgm,draftkings,bet_365'
+    #url = 'https://levy-edge.statsinsider.com.au/matches/upcoming?Sport=NFL,WNBA,MLB,MLS,CFB,LMX&days=7&strip=true&best_bets=true&bookmakers=fanduel,betmgm,draftkings,bet_365'
+
+    #Fixed URL to only return NFL picks for now.
+    url = 'https://levy-edge.statsinsider.com.au/matches/upcoming?Sport=NFL&days=7&strip=true&best_bets=true&bookmakers=fanduel,betmgm,draftkings,bet_365'
 
     # Headers as specified in your request
     headers = {
