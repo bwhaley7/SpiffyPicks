@@ -1,4 +1,5 @@
 scrapers/picks/__pycache__/
+scrapers/odds/__pycache__/
 scrapers/projections/__pycache__/
 scrapers/articles/__pycache__/
 scrapers/.env
