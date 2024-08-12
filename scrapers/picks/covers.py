@@ -3,7 +3,7 @@ import re
 from lxml import html
 from datetime import datetime
 
-def scrape_picks_covers(dbInfo):
+def scrape_picks_covers():
     url = 'https://www.covers.com/picks/nfl'
 
     try:
