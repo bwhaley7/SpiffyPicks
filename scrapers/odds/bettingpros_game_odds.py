@@ -1,5 +1,6 @@
 import requests
 import json
+import os
 
 # Define the base URL for fetching events
 base_events_url = "https://api.bettingpros.com/v3/events"
@@ -56,7 +57,7 @@ def get_game_ids_and_matchups(week):
         return {}
 
 # Function to get odds for a list of game IDs
-def get_odds_for_games(game_info, week):
+def get_odds_for_games(game_info, week, dataPath):
     if not game_info:
         print("No game IDs to fetch odds for.")
         return
@@ -86,13 +87,13 @@ def get_odds_for_games(game_info, week):
         }
 
         # Save the odds data to a JSON file
-        with open(f'nfl_odds_week_{week}.json', 'w') as json_file:
+        with open(os.path.join(dataPath, f'nfl_odds_week_{week}.json'), 'w') as json_file:
             json.dump(combined_data, json_file, indent=4)
 
     else:
         print(f"Error fetching odds: {response_offers.status_code}")
 
-def output_game_odds_file(week):
+def output_game_odds_file(week, dataPath):
     game_info = get_game_ids_and_matchups(week)
 
-    get_odds_for_games(game_info,week)
+    get_odds_for_games(game_info,week, dataPath)
