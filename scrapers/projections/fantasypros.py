@@ -64,4 +64,5 @@ def scrape_fantasypros_projections(week):
         print(f"An error occured: {e}")
 
 def scrape_fantasypros(week):
-    scrape_fantasypros_projections(week)
+    projections = scrape_fantasypros_projections(week)
+    return projections
