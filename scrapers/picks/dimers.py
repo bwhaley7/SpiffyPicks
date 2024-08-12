@@ -11,7 +11,7 @@ def replace_bet_team_name(bets, away_team_name, home_team_name):
             bet["bet"] = home_team_name
     return bets
 
-def scrape_dimers(dbInfo):
+def scrape_dimers():
     #url = 'https://levy-edge.statsinsider.com.au/matches/upcoming?Sport=NFL,WNBA,MLB,MLS,CFB,LMX&days=7&strip=true&best_bets=true&bookmakers=fanduel,betmgm,draftkings,bet_365'
 
     #Fixed URL to only return NFL picks for now.
@@ -85,17 +85,8 @@ def scrape_dimers(dbInfo):
                 }
                 games.append(game_info)
 
-        client = MongoClient(dbInfo)
-        db = client['spiffypicks']
-        collection = db['scraped_picks']
-        collection.insert_many(games)
-        client.close()
-
-        print(f"Inserted {len(games)} records into MongoDB from Dimers.com")
-
-        # Convert the list of games to JSON format and print it
-        # games_json = json.dumps(games, indent=4)
-        # print(games_json)
+        print(f"Returned {len(games)} picks from Dimers.com")
+        return games
 
     except requests.RequestException as e:
         print(f"Request failed: {e}")
