@@ -65,5 +65,6 @@ def scrape__picks_pickswise():
         print(f"An error occured: {e}")
 
 def scrape_pickswise():
-    scrape__picks_pickswise()
+    picks = scrape__picks_pickswise()
+    return picks
     #Add scrape method for player props
