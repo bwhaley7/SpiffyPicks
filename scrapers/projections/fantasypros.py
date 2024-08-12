@@ -63,5 +63,5 @@ def scrape_fantasypros_projections(week):
     except Exception as e:
         print(f"An error occured: {e}")
 
-def scrape_fantasypros(dbInfo, week):
-    scrape_fantasypros_projections(dbInfo, week)
+def scrape_fantasypros(week):
+    scrape_fantasypros_projections(week)
