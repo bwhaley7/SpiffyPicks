@@ -3,7 +3,6 @@ import re
 import pandas as pd
 from lxml import html
 from datetime import datetime
-from pymongo import MongoClient
 
 base_url = "https://www.oddsshark.com/nfl/computer-picks"
 
@@ -111,11 +110,7 @@ def scrape_matchup_data(matchup_link, dbInfo):
                 game_data['site'] = "Oddsshark.com"
                 game_data['data_added'] = datetime.now()
 
-                client = MongoClient(dbInfo)
-                db = client['spiffypicks']
-                collection = db['scraped_picks']
-                collection.insert_one(game_data)
-                client.close()
+                return game_data
             else:
                 print("Did not contain numbers. Invalid.")
         else:
@@ -128,8 +123,8 @@ def scrape_matchup_data(matchup_link, dbInfo):
 
 
 
-def scrape_oddsshark(dbInfo):
+def scrape_oddsshark():
     matchup_links = scrape_matchup_links()
     for link in matchup_links:
-        scrape_matchup_data(link,dbInfo)
-    print(f"Added {len(matchup_links)} records from Oddsshark to MongoDB.")
+        scrape_matchup_data(link)
+    print(f"Added {len(matchup_links)} picks from Oddsshark")
