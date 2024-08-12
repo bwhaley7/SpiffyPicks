@@ -3,7 +3,7 @@ from lxml import html
 from pymongo import MongoClient
 from datetime import datetime
 
-def scrape_sportsline_dfs(dbInfo):
+def scrape_sportsline_dfs():
     url = "https://www.sportsline.com/nfl/expert-projections/simulation/"
 
     try:
@@ -51,13 +51,8 @@ def scrape_sportsline_dfs(dbInfo):
             }
             projections.append(projection)
 
-
-        client = MongoClient(dbInfo)
-        db = client['spiffypicks']
-        collection = db['scraped_projections']
-        collection.insert_many(projections)
-
-        print(f"Inserted {len(projections)} projections into MongoDB from sportsline.com")
+        print(f"Returned {len(projections)} projections from sportsline.com")
+        return projections
     
     except requests.RequestException as e:
         print(f"Request failed: {e}")
