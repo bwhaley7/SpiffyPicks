@@ -71,6 +71,6 @@ def scrape_page_articles():
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def scrape_covers_articles(dbInfo):
+def scrape_covers_articles():
     articles = scrape_page_articles()
     return articles
