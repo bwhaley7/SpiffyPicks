@@ -1,8 +1,7 @@
 import requests
-from pymongo import MongoClient
 from datetime import datetime
 
-def scrape__picks_pickswise(dbInfo):
+def scrape__picks_pickswise():
     url = 'https://www.pickswise.com/_next/data/mH9ttVCAg7OXa5acQnTfn/_sport/nfl/picks.json?pageSlug=%2Fnfl%2Fpicks%2F&sport=nfl'
 
     params = {
@@ -56,19 +55,8 @@ def scrape__picks_pickswise(dbInfo):
                 }
                 formatted_picks.append(formatted_pick)
 
-        client = MongoClient(dbInfo)
-        db = client['spiffypicks']
-        collection = db['scraped_picks']
-        collection.insert_many(formatted_picks)
-        client.close()
-
         print(f"Inserted {len(formatted_picks)} records into MongoDB from pickswise.com")
-        # Debug output
-        # print(f"{len(formatted_picks)} picks scraped from Pickswise.")
-        # print(json.dumps(formatted_picks, indent=4))
-        # result_json = json.dumps(formatted_picks, indent=4)
-
-        # return result_json
+        return formatted_picks
 
     except requests.RequestException as e:
         print(f"Request failed: {e}")
@@ -76,6 +64,6 @@ def scrape__picks_pickswise(dbInfo):
     except Exception as e:
         print(f"An error occured: {e}")
 
-def scrape_pickswise(dbInfo):
-    scrape__picks_pickswise(dbInfo)
+def scrape_pickswise():
+    scrape__picks_pickswise()
     #Add scrape method for player props
