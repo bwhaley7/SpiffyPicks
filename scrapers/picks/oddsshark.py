@@ -126,5 +126,6 @@ def scrape_matchup_data(matchup_link):
 def scrape_oddsshark():
     matchup_links = scrape_matchup_links()
     for link in matchup_links:
-        scrape_matchup_data(link)
+        data = scrape_matchup_data(link)
     print(f"Added {len(matchup_links)} picks from Oddsshark")
+    return data
