@@ -28,7 +28,7 @@ def scrape_matchup_links():
         print(f"Error scraping matchup links: {e}")
         return []
     
-def scrape_matchup_data(matchup_link, dbInfo):
+def scrape_matchup_data(matchup_link):
     try:
         response = requests.get(matchup_link)
         response.raise_for_status()
