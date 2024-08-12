@@ -4,7 +4,7 @@ import pytz
 from lxml import html
 from datetime import datetime
 
-def scrape__picks_wagertalk(dbInfo):
+def scrape__picks_wagertalk():
     url = 'https://www.wagertalk.com/free-sports-picks/nfl'
 
     try:
