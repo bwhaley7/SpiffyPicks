@@ -1,7 +1,6 @@
 import requests
 from lxml import html
 from datetime import datetime
-from pymongo import MongoClient
 
 def scrape_page_articles():
     url = "https://www.actionnetwork.com/nfl/archive/1"
@@ -75,11 +74,4 @@ def scrape_page_articles():
 
 def scrape_action_articles(dbInfo):
     articles = scrape_page_articles()
-
-    if articles:
-        client = MongoClient(dbInfo)
-        db = client['spiffypicks']
-        collection = db['game_articles']
-        collection.insert_many(articles)
-        print(f"Inserted {len(articles)} articles from actionnetwork.com")
-        client.close()
+    return articles

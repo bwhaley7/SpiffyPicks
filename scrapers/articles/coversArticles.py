@@ -73,11 +73,4 @@ def scrape_page_articles():
 
 def scrape_covers_articles(dbInfo):
     articles = scrape_page_articles()
-
-    if articles:
-        client = MongoClient(dbInfo)
-        db = client['spiffypicks']
-        collection = db['game_articles']
-        collection.insert_many(articles)
-        print(f"Inserted {len(articles)} articles from covers.com")
-        client.close()
+    return articles
