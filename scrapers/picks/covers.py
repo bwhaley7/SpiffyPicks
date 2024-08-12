@@ -2,7 +2,6 @@ import requests
 import re
 from lxml import html
 from datetime import datetime
-from pymongo.mongo_client import MongoClient
 
 def scrape_picks_covers(dbInfo):
     url = 'https://www.covers.com/picks/nfl'
@@ -58,20 +57,16 @@ def scrape_picks_covers(dbInfo):
                 'explanation': explanation_text_clean,
                 'site': "Covers.com",
                 'data_added': datetime.now()
-            })  
+            })
 
-        client = MongoClient(dbInfo)
-        db = client['spiffypicks']
-        collection = db['scraped_picks']
-        collection.insert_many(picks_data)
-        client.close()
+        print(f"Returned {len(picks_data)} picks from Covers.com")
 
-        print(f"Inserted {len(picks_data)} records into MongoDB from Covers.com")
+        return picks_data
 
     except requests.RequestException as e:
         print(f"Request failed: {e}")
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def scrape_covers(dbInfo):
-    scrape_picks_covers(dbInfo)
+def scrape_covers():
+    scrape_picks_covers()
