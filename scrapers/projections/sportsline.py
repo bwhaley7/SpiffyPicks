@@ -38,19 +38,22 @@ def scrape_sportsline_dfs():
         projections = []
         for i in range(min_length):
             projection = {
-                "player": players[i].text_content().strip(),
+                "player_name": players[i].text_content().strip(),
                 "position": positions[i].text_content().strip(),
                 "team": teams[i].text_content().strip(),
                 "game": games[i].text_content().strip(),
-                "projected_fantasy_points": projected_fps[i].text_content().strip(),
-                "projected_passing_yards": pass_yds[i].text_content().strip(),
-                "projected_rushing_yards": rush_yds[i].text_content().strip(),
-                "projected_receiving_yards": rec_yds[i].text_content().strip(),
+                "projected_fantasy_points": float(projected_fps[i].text_content().strip()) if projected_fps[i].text_content().strip() != '-' else 0.0,
+                "projected_passing_yards": float(pass_yds[i].text_content().strip()) if pass_yds[i].text_content().strip() != '-' else 0.0,
+                "projected_rushing_yards": float(rush_yds[i].text_content().strip()) if rush_yds[i].text_content().strip() != '-' else 0.0,
+                "projected_receiving_yards": float(rec_yds[i].text_content().strip()) if rec_yds[i].text_content().strip() != '-' else 0.0,
+                "projected_touchdowns": 0.0,  # Assuming not provided, set to 0.0 or calculate if possible
+                "projected_interceptions": 0.0,  # Set to 0.0 since not provided
+                "projected_fumbles": 0.0,  # Set to 0.0 since not provided
                 "site": "sportsline.com",
                 "data_added": datetime.now()
             }
             projections.append(projection)
-
+            
         print(f"Returned {len(projections)} projections from sportsline.com")
         return projections
     

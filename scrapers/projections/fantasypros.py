@@ -1,4 +1,5 @@
 import requests
+from datetime import datetime
 
 def scrape_fantasypros_projections(week):
     url = f'https://api.fantasypros.com/v2/json/nfl/undefined/projections?position=ALL&scoring=HALF&week={week}'
@@ -29,26 +30,19 @@ def scrape_fantasypros_projections(week):
 
         for player in player_projections:
             player_data = {
-                'name': player.get('name'),
-                'position_id': player.get('position_id'),
+                'player_name': player.get('name'),
+                'position': player.get('position_id'),
                 'team': player.get('team_id'),
-                'projected stats': {
-                    'points': player.get('stats', {}).get('points'),
-                    'points_ppr': player.get('stats', {}).get('points_ppr'),
-                    'points_half': player.get('stats', {}).get('points_half'),
-                    'pass_att': player.get('stats', {}).get('pass_att'),
-                    'pass_cmp': player.get('stats', {}).get('pass_cmp'),
-                    'pass_yds': player.get('stats', {}).get('pass_yds'),
-                    'pass_tds': player.get('stats', {}).get('pass_tds'),
-                    'pass_ints': player.get('stats', {}).get('pass_ints'),
-                    'rush_att': player.get('stats', {}).get('rush_att'),
-                    'rush_yds': player.get('stats', {}).get('rush_yds'),
-                    'rush_tds': player.get('stats', {}).get('rush_tds'),
-                    'fumbles': player.get('stats', {}).get('fumbles'),
-                    'ret_tds': player.get('stats', {}).get('ret_tds'),
-                    '2pt_tds': player.get('stats', {}).get('2pt_tds')
-                },
-                "site": "fantasypros.com"
+                'game': '',  # Add game info if available
+                'projected_fantasy_points': player.get('stats', {}).get('points', 0.0),
+                'projected_passing_yards': player.get('stats', {}).get('pass_yds', 0.0),
+                'projected_rushing_yards': player.get('stats', {}).get('rush_yds', 0.0),
+                'projected_receiving_yards': 0.0,  # Assuming not provided, so set to 0.0
+                'projected_touchdowns': player.get('stats', {}).get('pass_tds', 0.0) + player.get('stats', {}).get('rush_tds', 0.0),
+                'projected_interceptions': player.get('stats', {}).get('pass_ints', 0.0),
+                'projected_fumbles': player.get('stats', {}).get('fumbles', 0.0),
+                'site': "fantasypros.com",
+                'data_added': datetime.now()
             }
             if player.get('stats', {}).get('points') > 1:
                 projection_data.append(player_data)
