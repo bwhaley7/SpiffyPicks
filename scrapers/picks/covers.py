@@ -66,3 +66,7 @@ def scrape_picks_covers():
         print(f"Request failed: {e}")
     except Exception as e:
         print(f"An error occurred: {e}")
+
+def scrape_covers():
+    picks = scrape_picks_covers()
+    return picks
