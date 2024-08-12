@@ -1,9 +1,6 @@
-import os
 import requests
-import json
-from pymongo import MongoClient
 
-def scrape_fantasypros_projections(dbInfo, week):
+def scrape_fantasypros_projections(week):
     url = f'https://api.fantasypros.com/v2/json/nfl/undefined/projections?position=ALL&scoring=HALF&week={week}'
 
     headers = {
@@ -56,13 +53,9 @@ def scrape_fantasypros_projections(dbInfo, week):
             if player.get('stats', {}).get('points') > 1:
                 projection_data.append(player_data)
                 count+=1
-
-        client = MongoClient(dbInfo)
-        db = client['spiffypicks']
-        collection = db['scraped_projections']
-        collection.insert_many(projection_data)
         
         print(f"{count} player projections added for week {week} from fantasypros.com")
+        return projection_data
 
 
     except requests.RequestException as e:
