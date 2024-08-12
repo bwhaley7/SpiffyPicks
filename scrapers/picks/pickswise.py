@@ -43,17 +43,31 @@ def scrape__picks_pickswise():
 
             # Access the basePicks within each game
             for pick in game.get('basePicks', []):
-                formatted_pick = {
-                    'away_team_name': pick.get('awayTeam', {}).get('name', 'N/A'),
-                    'home_team_name': pick.get('homeTeam', {}).get('name', 'N/A'),
+                pick_data = {
+                    'matchup': f"{pick.get('awayTeam', {}).get('name', 'N/A')} at {pick.get('homeTeam', {}).get('name', 'N/A')}",
+                    'date': date_only,
+                    'time': '',
+                    'away_team': pick.get('awayTeam', {}).get('name', 'N/A'),
+                    'home_team': pick.get('homeTeam', {}).get('name', 'N/A'),
+                    'venue': '',
+                    'predicted_away_score': None,
+                    'predicted_home_score': None,
+                    'predicted_score': '',
+                    'predicted_game_ou': '',
+                    'best_bets': '',
+                    'best_parlay': '',
+                    'betting_info': '',
                     'market': pick.get('market', 'N/A'),
-                    'date': date_only,  # Use the converted ISO 8601 date from startTimeString
                     'outcome': pick.get('outcome', 'N/A'),
-                    'reasoning': pick.get('reasoning', 'N/A'),
+                    'explanation': pick.get('reasoning', 'N/A'),
+                    'expert_prediction': '',
+                    'game_trends': '',
+                    'last10head2head': '',
                     'site': "pickswise.com",
                     'data_added': datetime.now()
                 }
-                formatted_picks.append(formatted_pick)
+
+                formatted_picks.append(pick_data)
 
         print(f"Inserted {len(formatted_picks)} records into MongoDB from pickswise.com")
         return formatted_picks

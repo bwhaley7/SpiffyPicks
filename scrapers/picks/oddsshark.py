@@ -101,16 +101,31 @@ def scrape_matchup_data(matchup_link):
 
             # Check if both scores contain at least one number using regex
             if re.search(r'\d', team1_score) and re.search(r'\d', team2_score) and re.search(r'\d', gameTotalPicks):
-                game_data['predictedScore'] = f"Predicted score of {matchupText}: {team1_score} - {team2_score}"
-                game_data['predictedGameOU'] = gameTotalString
-                game_data['expertPrediction'] = expertPick
-                game_data['last10head2head'] = table_data
-                game_data['gameTrends'] = trend1_data + trend2_data
-                game_data['date'] = iso_date
-                game_data['site'] = "Oddsshark.com"
-                game_data['data_added'] = datetime.now()
+                picks_data = {
+                    'matchup': matchupText,  # If matchup is formatted differently, clean it accordingly
+                    'date': iso_date,
+                    'time': '',
+                    'away_team': '',  # Leave empty if not provided separately
+                    'home_team': '',  # Leave empty if not provided separately
+                    'venue': '',
+                    'predicted_away_score': None,
+                    'predicted_home_score': None,
+                    'predicted_score': f"{team1_score} - {team2_score}",
+                    'predicted_game_ou': gameTotalString,
+                    'best_bets': '',
+                    'best_parlay': '',
+                    'betting_info': '',
+                    'market': '',
+                    'outcome': expertPick,
+                    'explanation': '',
+                    'expert_prediction': expertPick,
+                    'game_trends': trend1_data + trend2_data,
+                    'last10head2head': table_data,
+                    'site': "Oddsshark.com",
+                    'data_added': datetime.now()
+                }
 
-                return game_data
+                return picks_data
             else:
                 print("Did not contain numbers. Invalid.")
         else:

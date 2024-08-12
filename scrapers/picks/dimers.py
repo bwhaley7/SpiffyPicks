@@ -70,20 +70,30 @@ def scrape_dimers():
                 except ValueError:
                     date_iso = match_data.get("Date", "")  # Use the original date if parsing fails
 
-                game_info = {
-                    "away_team": away_team_name,
-                    "home_team": home_team_name,
-                    "date": date_iso,  # Use the converted ISO date
-                    "venue": match_data.get("Venue"),
-                    "pred_away_score": pre_data.get("PredAwayScore"),
-                    "pred_home_score": pre_data.get("PredHomeScore"),
-                    "best_bets": aggregated_best_bets,
-                    "best_parlay": aggregated_best_parlay,
-                    "betting_info": aggregated_betting_info,
-                    "site": "Dimers.com",
-                    "data_added": datetime.now()
+                picks_data ={
+                    'matchup': f"{away_team_name} at {home_team_name}",
+                    'date': date_iso,
+                    'time': '',
+                    'away_team': away_team_name,
+                    'home_team': home_team_name,
+                    'venue': match_data.get("Venue"),
+                    'predicted_away_score': pre_data.get("PredAwayScore"),
+                    'predicted_home_score': pre_data.get("PredHomeScore"),
+                    'predicted_score': '',
+                    'predicted_game_ou': '',
+                    'best_bets': aggregated_best_bets,
+                    'best_parlay': aggregated_best_parlay,
+                    'betting_info': aggregated_betting_info,
+                    'market': '',
+                    'outcome': '',
+                    'explanation': '',
+                    'expert_prediction': '',
+                    'game_trends': '',
+                    'last10head2head': '',
+                    'site': "Dimers.com",
+                    'data_added': datetime.now()
                 }
-                games.append(game_info)
+                games.append(picks_data)
 
         print(f"Returned {len(games)} picks from Dimers.com")
         return games

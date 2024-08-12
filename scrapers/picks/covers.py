@@ -51,13 +51,28 @@ def scrape_picks_covers():
 
             picks_data.append({
                 'matchup': matchup_text_clean,
-                'date': date_iso,  # Use the converted ISO format date
+                'date': date_iso,
                 'time': time_str,
-                'pick': pick_text_clean,
+                'away_team': '',  # If not provided, leave empty
+                'home_team': '',  # If not provided, leave empty
+                'venue': '',
+                'predicted_away_score': None,
+                'predicted_home_score': None,
+                'predicted_score': '',
+                'predicted_game_ou': '',
+                'best_bets': '',
+                'best_parlay': '',
+                'betting_info': '',
+                'market': '',  # Assume it's not available, if so, leave empty
+                'outcome': pick_text_clean,
                 'explanation': explanation_text_clean,
+                'expert_prediction': '',
+                'game_trends': '',
+                'last10head2head': '',
                 'site': "Covers.com",
                 'data_added': datetime.now()
             })
+
 
         print(f"Returned {len(picks_data)} picks from Covers.com")
         return picks_data

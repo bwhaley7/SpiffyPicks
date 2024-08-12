@@ -51,12 +51,29 @@ def scrape__picks_wagertalk():
             # Check if the event includes the word "at"
             if "at" in event_text:
                 picks.append({
-                    'event': event_text_clean,
-                    'date': iso_date,  # Use the converted ISO date
-                    'play': play_text,
-                    'site': 'wagertalk.com',
-                    'data_added': datetime.now()
-                })
+                'matchup': event_text_clean,
+                'date': iso_date,
+                'time': '',
+                'away_team': '',  # If not available, leave empty
+                'home_team': '',  # If not available, leave empty
+                'venue': '',
+                'predicted_away_score': None,
+                'predicted_home_score': None,
+                'predicted_score': '',
+                'predicted_game_ou': '',
+                'best_bets': '',
+                'best_parlay': '',
+                'betting_info': '',
+                'market': '',
+                'outcome': play_text,
+                'explanation': '',
+                'expert_prediction': '',
+                'game_trends': '',
+                'last10head2head': '',
+                'site': 'wagertalk.com',
+                'data_added': datetime.now()
+            })
+
 
         print(f"Inserted {len(picks)} records into MongoDB from wagertalk.com")
         return picks
