@@ -68,5 +68,6 @@ def scrape__picks_wagertalk():
 
 
 def scrape_wagertalk():
-    scrape__picks_wagertalk()
+    picks = scrape__picks_wagertalk()
+    return picks
     #Add scrape method for player props
