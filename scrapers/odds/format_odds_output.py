@@ -2,7 +2,8 @@ import json
 import os
 from pymongo import MongoClient
 
-def reformat_odds(input_file, output_file, dbInfo):
+def reformat_odds(input_file, output_file, dataPath):
+    output_path = os.path.join(dataPath, output_file)
     # Load the JSON data from the file
     with open(input_file, 'r') as file:
         data = json.load(file)
@@ -77,21 +78,16 @@ def reformat_odds(input_file, output_file, dbInfo):
                         "is_off": is_off
                     })
 
-    # Save the reformatted data to a new JSON file
-    client = MongoClient(dbInfo)
-    db = client['spiffypicks']
-    collection = db['odds']
-    collection.insert_many(reformatted_data)
-
-    client.close()
+    with open(output_path, 'w', encoding='utf-8') as file:
+        json.dump(reformatted_data, file, ensure_ascii=False, indent=4)
 
     if os.path.exists(input_file):
         os.remove(input_file)
 
-    print(f"Added {len(reformatted_data)} odds records into MongoDB")
+    print(f"Output {len(reformatted_data)} odds records to {output_path}")
 
-def format_odds(week, dbInfo):
-    input_file = 'nfl_odds_week_'
+def format_odds(week, dataPath):
+    input_file = os.path.join(dataPath,'nfl_odds_week_')
     input_append = f"{week}.json"
     output_file = 'reformatted_odds.json'
-    reformat_odds(input_file+input_append, output_file, dbInfo)
+    reformat_odds(input_file+input_append, output_file, dataPath)
