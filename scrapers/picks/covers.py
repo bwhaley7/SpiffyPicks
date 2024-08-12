@@ -60,13 +60,9 @@ def scrape_picks_covers():
             })
 
         print(f"Returned {len(picks_data)} picks from Covers.com")
-
         return picks_data
 
     except requests.RequestException as e:
         print(f"Request failed: {e}")
     except Exception as e:
         print(f"An error occurred: {e}")
-
-def scrape_covers():
-    scrape_picks_covers()
