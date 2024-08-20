@@ -2,6 +2,7 @@ import requests
 import json
 from pymongo import MongoClient
 from datetime import datetime
+from nfl_teams import get_team_abbreviation
 
 def replace_bet_team_name(bets, away_team_name, home_team_name):
     for bet in bets:
@@ -71,7 +72,7 @@ def scrape_dimers():
                     date_iso = match_data.get("Date", "")  # Use the original date if parsing fails
 
                 picks_data ={
-                    'matchup': f"{away_team_name} at {home_team_name}",
+                    'matchup': [get_team_abbreviation(away_team_name), get_team_abbreviation(home_team_name)],
                     'date': date_iso,
                     'time': '',
                     'away_team': away_team_name,
