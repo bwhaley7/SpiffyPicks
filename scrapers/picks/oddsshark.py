@@ -3,6 +3,7 @@ import re
 import pandas as pd
 from lxml import html
 from datetime import datetime
+from nfl_teams import get_team_abbreviation
 
 base_url = "https://www.oddsshark.com/nfl/computer-picks"
 
@@ -99,14 +100,19 @@ def scrape_matchup_data(matchup_link):
                 gameTotalPicks = gameTotalPicks.replace("U", "")
                 gameTotalString = "The game will go under" + gameTotalPicks + "total points"
 
+            teamText = matchupText.split()
+
+            awayTeam = get_team_abbreviation(teamText[0])
+            homeTeam = get_team_abbreviation(teamText[2])
+
             # Check if both scores contain at least one number using regex
             if re.search(r'\d', team1_score) and re.search(r'\d', team2_score) and re.search(r'\d', gameTotalPicks):
                 picks_data = {
-                    'matchup': matchupText,  # If matchup is formatted differently, clean it accordingly
+                    'matchup': [awayTeam, homeTeam],
                     'date': iso_date,
                     'time': '',
-                    'away_team': '',  # Leave empty if not provided separately
-                    'home_team': '',  # Leave empty if not provided separately
+                    'away_team': awayTeam,
+                    'home_team': homeTeam,
                     'venue': '',
                     'predicted_away_score': None,
                     'predicted_home_score': None,
