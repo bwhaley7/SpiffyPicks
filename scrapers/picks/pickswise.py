@@ -1,5 +1,6 @@
 import requests
 from datetime import datetime
+from nfl_teams import get_team_abbreviation
 
 def scrape__picks_pickswise():
     url = 'https://www.pickswise.com/_next/data/mH9ttVCAg7OXa5acQnTfn/_sport/nfl/picks.json?pageSlug=%2Fnfl%2Fpicks%2F&sport=nfl'
@@ -44,7 +45,7 @@ def scrape__picks_pickswise():
             # Access the basePicks within each game
             for pick in game.get('basePicks', []):
                 pick_data = {
-                    'matchup': f"{pick.get('awayTeam', {}).get('name', 'N/A')} at {pick.get('homeTeam', {}).get('name', 'N/A')}",
+                    'matchup': [get_team_abbreviation(pick.get('awayTeam', {}).get('name', 'N/A')), get_team_abbreviation(pick.get('homeTeam', {}).get('name', 'N/A'))],
                     'date': date_only,
                     'time': '',
                     'away_team': pick.get('awayTeam', {}).get('name', 'N/A'),
