@@ -3,6 +3,7 @@ import re
 import pytz
 from lxml import html
 from datetime import datetime
+from nfl_teams import get_team_abbreviation
 
 def scrape__picks_wagertalk():
     url = 'https://www.wagertalk.com/free-sports-picks/nfl'
@@ -22,6 +23,8 @@ def scrape__picks_wagertalk():
         events = tree.xpath(event_xpath)
         datetimes = tree.xpath(datetime_xpath)
         plays = tree.xpath(play_xpath)
+        team1_index = 0
+        team2_index = 3
 
         picks = []
 
@@ -29,8 +32,8 @@ def scrape__picks_wagertalk():
             event_text = event.text_content().strip()
             dateandtime_text = dateandtime.text_content().strip()
             play_text = play.text_content().strip()
-
-            event_text_clean = re.sub(r'\(\d+\)', '', event_text).strip()
+            event_text_clean = re.sub(r'\(\d+\) ', '', event_text).strip()
+            event_split = event_text_clean.split()
 
             try:
                 # Clean up the date and time text
@@ -50,12 +53,15 @@ def scrape__picks_wagertalk():
 
             # Check if the event includes the word "at"
             if "at" in event_text:
+                if('at' in event_split[team2_index]):
+                    team2_index+=1
+
                 picks.append({
-                'matchup': event_text_clean,
+                'matchup': [get_team_abbreviation(event_split[team1_index] + " " + event_split[team1_index+1]), get_team_abbreviation(event_split[team2_index] + " " + event_split[team2_index+1])],
                 'date': iso_date,
                 'time': '',
-                'away_team': '',  # If not available, leave empty
-                'home_team': '',  # If not available, leave empty
+                'away_team': get_team_abbreviation(event_split[team1_index] + " " + event_split[team1_index+1]),
+                'home_team': get_team_abbreviation(event_split[team2_index] + " " + event_split[team2_index+1]),
                 'venue': '',
                 'predicted_away_score': None,
                 'predicted_home_score': None,
@@ -72,7 +78,9 @@ def scrape__picks_wagertalk():
                 'last10head2head': '',
                 'site': 'wagertalk.com',
                 'data_added': datetime.now()
-            })
+                })
+                if team2_index == 4:
+                    team2_index = 3
 
 
         print(f"Inserted {len(picks)} records into MongoDB from wagertalk.com")
