@@ -1,11 +1,11 @@
 import requests
 from lxml import html
 from datetime import datetime
-from pymongo import MongoClient
+from teamExtractor import TeamAbbreviationExtractor
 
 def scrape_page_articles():
     url = "https://www.covers.com/nfl/betting-news"
-    article_xpath = '/html/body/div[4]/div/div/div[1]/div/div[1]/div/div/div/h2/a'
+    article_xpath = '//div[@id="mainContainer"]//h2/a'
     date_xpath = '/html[1]/body[1]/div[4]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div/div[1]/div[2]'
     
     # Adding a User-Agent header to mimic a request from a browser
@@ -26,7 +26,7 @@ def scrape_page_articles():
         dates = tree.xpath(date_xpath)
 
         # Print the number of articles found
-        print(f"Found {len(articles)} articles.")
+        print(f"Found {len(articles)} articles at covers.com.")
 
         article_data_list = []
 
@@ -34,7 +34,12 @@ def scrape_page_articles():
         for index, article in enumerate(articles):
             article_text = article.text_content().strip()
             href = "https://covers.com" + article.get('href')
-            
+            article_response = requests.get(href, headers=headers)
+            article_response.raise_for_status()
+
+            extractor = TeamAbbreviationExtractor(article_response.content, '//div[@id="mainContainer"]', tags_to_search=['p'])
+            team_abbreviations = extractor.extract_team_abbreviations()
+
             # Check if the date exists for the corresponding article
             if index < len(dates):
                 date_text = dates[index].text_content().strip()
@@ -51,14 +56,15 @@ def scrape_page_articles():
                     date_iso = "Invalid Date"
             else:
                 date_iso = "Not Found"
-            
+
             # Create a JSON object for each article
             article_data = {
                 'article': article_text,
                 'url': href,
                 'date': date_iso,
                 'site': "Covers.com",
-                'scraped_at': datetime.now().isoformat()
+                'scraped_at': datetime.now().isoformat(),
+                'matchup': team_abbreviations  # Add the team abbreviations here
             }
             
             # Add the JSON object to the list
