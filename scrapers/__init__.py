@@ -30,7 +30,7 @@ def run_all_scrapers():
     dimers_picks = scrape_dimers()
     pickswise_picks = scrape_pickswise()
     wagertalk_picks = scrape_wagertalk()
-    #oddsshark_picks = scrape_oddsshark()
+    oddsshark_picks = scrape_oddsshark()
     fp_proj = scrape_fantasypros(2) #number is for the NFL week you are on.
     action_articles = scrape_action_articles()
     covers_articles = scrape_covers_articles()
@@ -42,8 +42,8 @@ def run_all_scrapers():
     covers_picks +
     dimers_picks +
     pickswise_picks +
-    wagertalk_picks #+
-    #oddsshark_picks
+    wagertalk_picks +
+    oddsshark_picks
     )
 
     analyst_articles = (
