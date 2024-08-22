@@ -36,7 +36,8 @@ def scrape_fantasypros_projections(week):
                 'game': '',  # Add game info if available
                 'projected_fantasy_points': stats.get('points', 0.0),
                 'site': "fantasypros.com",
-                'data_added': datetime.now()
+                'data_added': datetime.now(),
+                'week': week
             }
 
             # Add stats based on position

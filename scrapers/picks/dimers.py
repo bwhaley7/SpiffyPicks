@@ -2,7 +2,7 @@ import requests
 import json
 from pymongo import MongoClient
 from datetime import datetime
-from nfl_teams import get_team_abbreviation
+from util.nfl_teams import get_team_abbreviation
 
 def replace_bet_team_name(bets, away_team_name, home_team_name):
     for bet in bets:

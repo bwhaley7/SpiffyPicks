@@ -1,7 +1,7 @@
 import requests
 from lxml import html
 from datetime import datetime
-from teamExtractor import TeamAbbreviationExtractor
+from util.teamExtractor import TeamAbbreviationExtractor
 
 def scrape_action_articles():
     url = "https://www.actionnetwork.com/nfl/archive/1"

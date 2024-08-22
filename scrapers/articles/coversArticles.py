@@ -1,7 +1,7 @@
 import requests
 from lxml import html
 from datetime import datetime
-from teamExtractor import TeamAbbreviationExtractor
+from util.teamExtractor import TeamAbbreviationExtractor
 
 def scrape_page_articles():
     url = "https://www.covers.com/nfl/betting-news"

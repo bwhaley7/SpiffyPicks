@@ -1,28 +1,30 @@
 import nfl_data_py as nfl
 import json
+import os
 import traceback
 import pandas as pd
-import os
 from dotenv import load_dotenv, find_dotenv
-from pymongo import MongoClient
 
 class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, pd.Timestamp):
-            return obj.isoformat()  # Convert Timestamp to ISO 8601 string
+            return obj.isoformat()  
         return super().default(obj)
-    
+
+def save_json(data, output_file):
+    with open(output_file, 'w', encoding='utf-8') as json_file:
+        json.dump(data, json_file, cls=CustomJSONEncoder, indent=4)
+    print(f"Saved data to {output_file}")
+
 load_dotenv(find_dotenv())
 
-# Access the MongoDB connection string from the environment variable
 dataPath = os.getenv('DATA_PATH')
-output_file = os.path.join(dataPath, 'historical_data.json')
+output_folder = os.path.join(dataPath, 'historical_data')
+os.makedirs(output_folder, exist_ok=True)
 
-# Define the years you want to pull data for
 years = [2019, 2020, 2021, 2022, 2023]
 
 try:
-    # Fetch data using nfl_data_py
     weekly_data = nfl.import_weekly_data(years)
     seasonal_data = nfl.import_seasonal_data(years)
     schedules = nfl.import_schedules(years)
@@ -34,24 +36,17 @@ try:
     rushing_data = nfl.import_ngs_data(stat_type='rushing', years=years)
     receiving_data = nfl.import_ngs_data(stat_type='receiving', years=years)
 
-    # Consolidate all data into a dictionary of lists of records
-    data = {
-        "weekly_data": weekly_data.to_dict(orient="records"),
-        "seasonal_data": seasonal_data.to_dict(orient="records"),
-        "schedules": schedules.to_dict(orient="records"),
-        "scoring_lines": scoring_lines.to_dict(orient="records"),
-        "injuries": injuries.to_dict(orient="records"),
-        "depth_charts": depth_charts.to_dict(orient="records"),
-        "snap_counts": snap_counts.to_dict(orient="records"),
-        "next_gen_stats_passing": passing_data.to_dict(orient="records"),
-        "next_gen_stats_rushing": rushing_data.to_dict(orient="records"),
-        "next_gen_stats_receiving": receiving_data.to_dict(orient="records")
-    }
-
-    with open(output_file, 'w') as json_file:
-        json.dump(data, json_file, indent=4, cls=CustomJSONEncoder)
-
-    print(f"Historical data downloaded to: {output_file}")
+    # Save each dataset to a separate JSON file
+    save_json(weekly_data.to_dict(orient="records"), os.path.join(output_folder, 'weekly_data.json'))
+    save_json(seasonal_data.to_dict(orient="records"), os.path.join(output_folder, 'seasonal_data.json'))
+    save_json(schedules.to_dict(orient="records"), os.path.join(output_folder, 'schedules.json'))
+    save_json(scoring_lines.to_dict(orient="records"), os.path.join(output_folder, 'scoring_lines.json'))
+    save_json(injuries.to_dict(orient="records"), os.path.join(output_folder, 'injuries.json'))
+    save_json(depth_charts.to_dict(orient="records"), os.path.join(output_folder, 'depth_charts.json'))
+    save_json(snap_counts.to_dict(orient="records"), os.path.join(output_folder, 'snap_counts.json'))
+    save_json(passing_data.to_dict(orient="records"), os.path.join(output_folder, 'next_gen_stats_passing.json'))
+    save_json(rushing_data.to_dict(orient="records"), os.path.join(output_folder, 'next_gen_stats_rushing.json'))
+    save_json(receiving_data.to_dict(orient="records"), os.path.join(output_folder, 'next_gen_stats_receiving.json'))
 
 except Exception as e:
     print(f"An error occurred: {e}")

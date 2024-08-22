@@ -2,7 +2,7 @@ import requests
 import re
 from lxml import html
 from datetime import datetime
-from nfl_teams import get_team_abbreviation
+from ..util.nfl_teams import get_team_abbreviation
 
 def scrape_picks_covers():
     url = 'https://www.covers.com/picks/nfl'

@@ -3,7 +3,7 @@ import re
 import pandas as pd
 from lxml import html
 from datetime import datetime
-from nfl_teams import get_team_abbreviation
+from util.nfl_teams import get_team_abbreviation
 
 base_url = "https://www.oddsshark.com/nfl/computer-picks"
 

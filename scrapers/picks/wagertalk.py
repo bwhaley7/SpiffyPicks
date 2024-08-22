@@ -3,7 +3,7 @@ import re
 import pytz
 from lxml import html
 from datetime import datetime
-from nfl_teams import get_team_abbreviation
+from util.nfl_teams import get_team_abbreviation
 
 def scrape__picks_wagertalk():
     url = 'https://www.wagertalk.com/free-sports-picks/nfl'

@@ -53,6 +53,11 @@ def get_event_player_props(event_id):
         'dateFormat': 'iso'  # ISO 8601 date format
     }
 
+    response = requests.get(url, params=params)
+    response.raise_for_status()
+
+    return response.json()
+
 def write_odds_to_file(odds_data, file_path):
     with open(file_path, 'w', encoding='utf-8') as file:
         json.dump(odds_data, file, indent=4)
@@ -67,8 +72,9 @@ def scrape_odds_and_props():
         # Get player props for each event
         for event in events:
             event_id = event['id']
-            event_odds = get_event_player_props(event_id)
-            all_odds_data.append(event_odds)
+            prop_odds = get_event_player_props(event_id)
+            all_odds_data.append(event)
+            all_odds_data.append(prop_odds)
 
         # Write all the odds and props data to a file
         with open('odds_and_props_output.json', 'w', encoding='utf-8') as file:
