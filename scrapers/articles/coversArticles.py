@@ -39,6 +39,7 @@ def scrape_page_articles():
 
             extractor = TeamAbbreviationExtractor(article_response.content, '//div[@id="mainContainer"]', tags_to_search=['p'])
             team_abbreviations = extractor.extract_team_abbreviations()
+            article_content = extractor.extract_content()
 
             # Check if the date exists for the corresponding article
             if index < len(dates):
@@ -60,6 +61,7 @@ def scrape_page_articles():
             # Create a JSON object for each article
             article_data = {
                 'article': article_text,
+                'content': article_content,
                 'url': href,
                 'date': date_iso,
                 'site': "Covers.com",

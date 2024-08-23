@@ -35,6 +35,7 @@ def scrape_action_articles():
                 # Use TeamAbbreviationExtractor with the appropriate div's XPath
                 extractor = TeamAbbreviationExtractor(article_response.content, '//div[contains(@class, "contentBody__main")]')
                 team_abbreviations = extractor.extract_team_abbreviations()
+                article_content = extractor.extract_content()
 
                 date_element = article_tree.xpath(date_xpath)
                 if date_element:
@@ -52,6 +53,7 @@ def scrape_action_articles():
 
             article_data = {
                 'article': article_text,
+                'content': article_content,
                 'url': href,
                 'date': date_iso,
                 'site': "Actionnetwork.com",
