@@ -36,10 +36,13 @@ def scrape_matchup_data(matchup_link):
 
         tree = html.fromstring(response.content)
 
+        with open("game.txt", 'w', encoding='utf-8') as file:
+            file.write(response.text)
+
         matchup_xpath = '/html/body/div/div[2]/main/div[2]/div/article/div/div/div/div[1]/div[7]/div/div/div[1]/div[1]/div[3]'
-        team1_score_xpath = '/html/body/div/div[2]/main/div[2]/div/article/div/div/div/div[1]/div[7]/div/div/div[1]/div[2]/div[2]/div[1]/div[3]'
-        team2_score_xpath = '/html/body/div/div[2]/main/div[2]/div/article/div/div/div/div[1]/div[7]/div/div/div[1]/div[2]/div[2]/div[1]/div[4]'
-        game_total_pick_xpath = '/html/body/div/div[2]/main/div[2]/div/article/div/div/div/div[1]/div[7]/div/div/div[1]/div[2]/div[2]/div[3]/div[3]'
+        team1_score_xpath = '/html/body/div/div[2]/main/div[2]/div/article/div/div/div/div[1]/div[7]/div/div/div[1]/div[2]/div/div[1]/div[3]/span[2]'
+        team2_score_xpath = '/html/body/div/div[2]/main/div[2]/div/article/div/div/div/div[1]/div[7]/div/div/div[1]/div[2]/div/div[1]/div[4]/span[2]'
+        game_total_pick_xpath = '/html/body/div/div[2]/main/div[2]/div/article/div/div/div/div[1]/div[7]/div/div/div[1]/div[2]/div/div[3]/div[3]/span[1]'
         expert_pick_xpath = '/html/body/div/div[2]/main/div[2]/div/article/div/div/div/div[1]/div[7]/div/div/div[1]/div[2]/div[3]/div/div[1]/div[1]'
         h2h_last10_xpath = '/html/body/div/div[2]/main/div[2]/div/article/div/div/div/div[1]/div[11]/div/div[2]'
         trends1_xpath = '/html/body/div/div[2]/main/div[2]/div/article/div/div/div/div[1]/div[14]/div/div[2]/ul'
@@ -64,7 +67,6 @@ def scrape_matchup_data(matchup_link):
             iso_date = "Date not found"
 
         game_data = {}
-
         if team1_score_element and team2_score_element and game_total_element and matchup_element:
             matchupText = matchup_element[0].text_content().strip()
             team1_score = team1_score_element[0].text_content().strip()
@@ -136,6 +138,7 @@ def scrape_matchup_data(matchup_link):
                 print("Did not contain numbers. Invalid.")
         else:
             print("Predicted score not found.")
+            print(f"Away Score: {team1_score_element} | Home Score: {team2_score_element} | Game Total: {game_total_element} | Matchup: {matchup_element}")
 
 
 

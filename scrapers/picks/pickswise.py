@@ -3,7 +3,7 @@ from datetime import datetime
 from util.nfl_teams import get_team_abbreviation
 
 def scrape__picks_pickswise():
-    url = 'https://www.pickswise.com/_next/data/mH9ttVCAg7OXa5acQnTfn/_sport/nfl/picks.json?pageSlug=%2Fnfl%2Fpicks%2F&sport=nfl'
+    url = 'https://www.pickswise.com/_next/data/VqcFgpz1bg6ehJqGddZwM/_sport/nfl/picks.json?pageSlug=%2Fnfl%2Fpicks%2F&sport=nfl'
 
     params = {
         'pageSlug': '%2Fnfl%2Fpicks%2F',
