@@ -31,3 +31,24 @@ class TeamAbbreviationExtractor:
                     abbreviations.add(abbreviation)
 
         return list(abbreviations)
+    
+    def extract_content(self):
+        content_list = []
+        
+        # Find the main container div
+        main_div = self.tree.xpath(self.main_div_xpath)
+
+        if not main_div:
+            print(f"No elements found with the provided XPath: {self.main_div_xpath}")
+            return content_list
+        
+        # Gather text from the desired tags within the main container
+        xpath_expression = " | ".join([f'.//{tag}' for tag in self.tags_to_search])
+        elements = main_div[0].xpath(xpath_expression)
+        
+        for element in elements:
+            text_content = element.text_content().strip()
+            if text_content:
+                content_list.append(text_content)
+
+        return str(content_list)
