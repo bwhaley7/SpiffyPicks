@@ -5,7 +5,7 @@ from lxml import html
 from datetime import datetime
 from util.teamExtractor import TeamAbbreviationExtractor
 
-def scrape_bettingspros_articles():
+def scrape_articles():
     url = 'https://www.bettingpros.com/articles/sports/nfl/'
     article_xpath = '/html/body/div[1]/div/div/div[1]/div/main/div/article/section/div/a'
     date_xpath = '/html[1]/body[1]/div[1]/div[1]/div[1]/div[1]/div[1]/main[1]/div[2]/div[1]/article[1]/div[1]/div[1]/div[1]/span[4]'
@@ -48,14 +48,54 @@ def scrape_bettingspros_articles():
             extracted_articles.append(article_info)
 
         print(f"Found {len(extracted_articles)} articles at bettingpros.com")
-        
-        for article in extracted_articles:
-            print(f"Title: {article['title']}")
-            print(f"Date: {article['date']}")
-            print(f"Link: {article['link']}")
-            print("-" * 40)
+        return extracted_articles
 
     except requests.RequestException as e:
         print(f"Request failed: {e}")
     except Exception as e:
         print(f"An error occurred: {e}")
+
+def get_article_content(articles): #Still not successfully pulling in the article content.
+    article_contents = []
+
+    for article in articles:
+        article_url = article['link']
+        try:
+            response = requests.get(article_url)
+            response.raise_for_status()
+
+            html_content = response.content.decode('utf-8')
+            
+            # Extract content between specific markers
+            match = re.search(r'const bpArticlePageData\s*=\s*(\{.*?});\s*</script>', html_content, re.DOTALL)
+            if match:
+                json_like_data = match.group(1)
+
+                # Attempt to find the article content within the extracted JSON-like string
+                content_match = re.findall(r'<p[^>]*>(.*?)</p>', json_like_data, re.DOTALL)
+                
+                # Clean and append content
+                cleaned_content = [re.sub('<[^<]+?>', '', c).strip() for c in content_match if c.strip()]
+                
+                if cleaned_content:
+                    article_contents.append({
+                        'title': article['title'],
+                        'content': cleaned_content,
+                        'link': article_url
+                    })
+                else:
+                    print(f"No relevant content found in the article for {article_url}.")
+            else:
+                print(f"No JSON-like content found in the article for {article_url}.")
+
+        except requests.RequestException as e:
+            print(f"Request failed for {article_url}: {e}")
+
+    return article_contents
+
+
+
+def scrape_bettingpros_articles():
+    articles = scrape_articles()
+    content = get_article_content(articles)
+    print(content)

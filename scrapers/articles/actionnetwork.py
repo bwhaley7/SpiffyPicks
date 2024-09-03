@@ -18,7 +18,7 @@ def scrape_action_articles():
 
         tree = html.fromstring(response.content)
         articles = tree.xpath(article_xpath)
-        print(f"Found {len(articles)} articles.")
+        print(f"Found {len(articles)} articles at actionnetwork.")
 
         article_data_list = []
 

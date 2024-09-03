@@ -43,7 +43,7 @@ def scrape_matchup_data(matchup_link):
         team1_score_xpath = '/html/body/div/div[2]/main/div[2]/div/article/div/div/div/div[1]/div[7]/div/div/div[1]/div[2]/div/div[1]/div[3]/span[2]'
         team2_score_xpath = '/html/body/div/div[2]/main/div[2]/div/article/div/div/div/div[1]/div[7]/div/div/div[1]/div[2]/div/div[1]/div[4]/span[2]'
         game_total_pick_xpath = '/html/body/div/div[2]/main/div[2]/div/article/div/div/div/div[1]/div[7]/div/div/div[1]/div[2]/div/div[3]/div[3]/span[1]'
-        expert_pick_xpath = '/html/body/div/div[2]/main/div[2]/div/article/div/div/div/div[1]/div[7]/div/div/div[1]/div[2]/div[3]/div/div[1]/div[1]'
+        expert_pick_xpath = '/html[1]/body[1]/div[1]/div[2]/main[1]/div[2]/div[1]/article[1]/div[1]/div[1]/div[1]/div[1]/div[7]/div[1]/div[1]/div[1]/div[2]/div[2]/div/div[1]'
         h2h_last10_xpath = '/html/body/div/div[2]/main/div[2]/div/article/div/div/div/div[1]/div[11]/div/div[2]'
         trends1_xpath = '/html/body/div/div[2]/main/div[2]/div/article/div/div/div/div[1]/div[14]/div/div[2]/ul'
         trends2_xpath = '/html/body/div/div[2]/main/div[2]/div/article/div/div/div/div[1]/div[14]/div/div[3]/ul'
@@ -58,6 +58,8 @@ def scrape_matchup_data(matchup_link):
         trends1_element = tree.xpath(trends1_xpath)
         trends2_element = tree.xpath(trends2_xpath)
         date_element = tree.xpath(date_xpath)
+
+        expertPicks = []
 
         if date_element:
             date_text = date_element[0].text_content().strip()
@@ -74,9 +76,14 @@ def scrape_matchup_data(matchup_link):
             gameTotalPicks = game_total_element[0].text_content().strip()
 
             if(expert_pick_element):
-                expertPick = expert_pick_element[0].text_content().strip()
-            else:
-                expertPick = "No expert prediction available"
+                if("Predicted Score" in expert_pick_element[0].text_content().strip()):
+                    expertPicks.append("No expert prediction available")
+                else:
+                    if(len(expert_pick_element) > 1):
+                        for i, pick in enumerate(expert_pick_element):
+                            expertPicks.append(expert_pick_element[i].text_content().strip())
+                    else:
+                        expertPicks.append(expert_pick_element[0].text_content().strip())
 
             if(h2h_last10_xpath):
                 table_html = html.tostring(h2h_last10_element[0], encoding='unicode')
@@ -116,17 +123,17 @@ def scrape_matchup_data(matchup_link):
                     'away_team': awayTeam,
                     'home_team': homeTeam,
                     'venue': '',
-                    'predicted_away_score': None,
-                    'predicted_home_score': None,
+                    'predicted_away_score': "N/A",
+                    'predicted_home_score': "N/A",
                     'predicted_score': f"{team1_score} - {team2_score}",
                     'predicted_game_ou': gameTotalString,
-                    'best_bets': '',
+                    'best_bets': expertPicks,
                     'best_parlay': '',
                     'betting_info': '',
                     'market': '',
-                    'outcome': expertPick,
+                    'outcome': '',
                     'explanation': '',
-                    'expert_prediction': expertPick,
+                    'expert_prediction': '',
                     'game_trends': trend1_data + trend2_data,
                     'last10head2head': table_data,
                     'site': "Oddsshark.com",

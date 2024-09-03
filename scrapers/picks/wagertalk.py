@@ -53,7 +53,8 @@ def scrape__picks_wagertalk():
 
             # Check if the event includes the word "at"
             if "at" in event_text:
-                if('at' in event_split[team2_index]):
+                
+                if('at' in event_split[team2_index] and len(event_split[team2_index]) == 2):
                     team2_index+=1
 
                 picks.append({
@@ -63,8 +64,8 @@ def scrape__picks_wagertalk():
                 'away_team': get_team_abbreviation(event_split[team1_index] + " " + event_split[team1_index+1]),
                 'home_team': get_team_abbreviation(event_split[team2_index] + " " + event_split[team2_index+1]),
                 'venue': '',
-                'predicted_away_score': None,
-                'predicted_home_score': None,
+                'predicted_away_score': "N/A",
+                'predicted_home_score': "N/A",
                 'predicted_score': '',
                 'predicted_game_ou': '',
                 'best_bets': '',
@@ -79,7 +80,7 @@ def scrape__picks_wagertalk():
                 'site': 'wagertalk.com',
                 'data_added': datetime.now()
                 })
-                if team2_index == 4:
+                if team2_index >= 4:
                     team2_index = 3
 
 

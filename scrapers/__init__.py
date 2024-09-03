@@ -10,6 +10,7 @@ from picks.oddsshark import scrape_oddsshark
 from projections.fantasypros import scrape_fantasypros
 from articles.actionnetwork import scrape_action_articles
 from articles.coversArticles import scrape_covers_articles
+from articles.bettingspros import scrape_bettingpros_articles
 from odds.bettingpros_game_odds import output_game_odds_file
 from odds.bettingspros_prop_odds import get_props
 from odds.format_odds_output import format_odds
@@ -38,15 +39,16 @@ def upload_json_to_db(connection, table_name, json_data):
     with connection.cursor() as cursor:  # Create a cursor from the connection
         if table_name == 'analyst_articles':
             query = f"""
-            INSERT INTO {table_name} (article, url, date, site, scraped_at, matchup)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO {table_name} (article, url, date, site, scraped_at, matchup, content)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
             ON DUPLICATE KEY UPDATE 
                 article = VALUES(article), 
                 url = VALUES(url), 
                 date = VALUES(date), 
                 site = VALUES(site), 
                 scraped_at = VALUES(scraped_at), 
-                matchup = VALUES(matchup);
+                matchup = VALUES(matchup),
+                content = VALUES(content);
             """
             for record in json_data:
                 values = (
@@ -55,7 +57,8 @@ def upload_json_to_db(connection, table_name, json_data):
                     record['date'],
                     record['site'],
                     record['scraped_at'],
-                    json.dumps(record['matchup'])  # Convert the matchup list to JSON string
+                    json.dumps(record['matchup']),
+                    record['content']
                 )
                 cursor.execute(query, values)
 
@@ -141,7 +144,7 @@ def upload_json_to_db(connection, table_name, json_data):
                 )
                 
                 # Debug: print the values tuple to ensure everything is correct
-                print(f"Inserting values: {values}")
+                #print(f"Inserting values: {values}")
                 
                 cursor.execute(query, values)
 
@@ -291,7 +294,7 @@ def upload_json_to_db(connection, table_name, json_data):
                 )
 
                 # Debug: print the values tuple to ensure everything is correct
-                print(f"Inserting values: {values}")
+                #print(f"Inserting values: {values}")
 
                 cursor.execute(query, values)
 
@@ -367,13 +370,26 @@ def upload_all_json_to_db():
         (odds_file, 'game_odds'),
         (props_file, 'player_odds')
     ]:
+        print(f"Processing file: {file_path} for table: {table_name}")
+
         with open(file_path, 'r', encoding='utf-8') as file:
             json_data = json.load(file)
+
+            if not json_data:
+                print(f"No data found in {file_path} for table: {table_name}")
+                continue
+
+            for i, record in enumerate(json_data):
+                if record is None:
+                    print(f"Found NoneType record in {file_path} at index {i} for table: {table_name}")
+                    continue
+
             upload_json_to_db(connection, table_name, json_data)
 
     connection.close()
     print("All data has been uploaded to the MySQL database.")
 
 if __name__ == "__main__":
-    run_all_scrapers()
-    #upload_all_json_to_db()
+    #scrape_bettingpros_articles()
+    #run_all_scrapers()
+    upload_all_json_to_db()
