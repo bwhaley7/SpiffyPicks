@@ -64,6 +64,8 @@ load_dotenv(find_dotenv())
 # Access the OpenAI API key from the environment variable
 api_key = os.getenv("OPENAI_API_KEY")
 
+path = os.getenv("PICKS_PATH")
+
 # Initialize the OpenAI client
 client = OpenAI(api_key=api_key)
 
@@ -89,9 +91,59 @@ def connect_to_db():
     )
     return connection
 
+
+def fetch_redzone_stats(cursor, player_name, position):
+    rushing_data = []
+    receiving_data = []
+
+    if position in ["RB", "WR", "TE"]:
+        if position == "RB":
+            # Fetch rushing data
+            cursor.execute("""
+                SELECT season, inside_20_attempts, inside_20_yards, inside_20_touchdowns, inside_20_rushing_share,
+                       inside_10_attempts, inside_10_yards, inside_10_touchdowns, inside_10_rushing_share,
+                       inside_5_attempts, inside_5_yards, inside_5_touchdowns, inside_5_rushing_share
+                FROM redzone_rushing_historical
+                WHERE player_name = %s
+            """, (player_name,))
+            rushing_data = cursor.fetchall()
+
+            # Fetch receiving data for RBs
+            cursor.execute("""
+                SELECT season, inside_20_targets, inside_20_receptions, inside_20_catch_percentage, inside_20_yards, inside_20_touchdowns, inside_20_target_share,
+                       inside_10_targets, inside_10_receptions, inside_10_catch_percentage, inside_10_yards, inside_10_touchdowns, inside_10_target_share
+                FROM redzone_receiving_historical
+                WHERE player_name = %s
+            """, (player_name,))
+            receiving_data = cursor.fetchall()
+        
+        elif position in ["WR", "TE"]:
+            # Fetch receiving data for WRs and TEs
+            cursor.execute("""
+                SELECT season, inside_20_targets, inside_20_receptions, inside_20_catch_percentage, inside_20_yards, inside_20_touchdowns, inside_20_target_share,
+                       inside_10_targets, inside_10_receptions, inside_10_catch_percentage, inside_10_yards, inside_10_touchdowns, inside_10_target_share
+                FROM redzone_receiving_historical
+                WHERE player_name = %s
+            """, (player_name,))
+            receiving_data = cursor.fetchall()
+    
+    return {
+        "player_name": player_name,
+        "rushing_data": rushing_data,
+        "receiving_data": receiving_data
+    }
+
 # Function to pull data from the database based on team abbreviations
 def fetch_data_for_game(cursor, table_name, team_abbr):
     if table_name == 'expert_picks':
+        query = f"""
+        SELECT * FROM {table_name} 
+        WHERE matchup LIKE %s 
+        AND matchup LIKE %s;
+        """
+        cursor.execute(query, (f'%{team_abbr[0]}%', f'%{team_abbr[1]}%'))
+    
+    elif table_name == 'analyst_articles':
         query = f"""
         SELECT * FROM {table_name} 
         WHERE matchup LIKE %s 
@@ -105,6 +157,14 @@ def fetch_player_data_for_game(cursor, table_name, team_abbr):
     query = f"""
     SELECT * FROM {table_name}
     WHERE team = %s OR team = %s
+    """
+    cursor.execute(query, (team_abbr[0], team_abbr[1]))
+    return cursor.fetchall()
+
+def fetch_goofy_data_for_game(cursor, table_name, team_abbr):
+    query = f"""
+    SELECT * FROM {table_name}
+    WHERE ï»¿Team = %s or ï»¿Team = %s
     """
     cursor.execute(query, (team_abbr[0], team_abbr[1]))
     return cursor.fetchall()
@@ -128,10 +188,10 @@ def generate_picks():
 
     # Get games for the current week
     games_for_week = return_games_by_week(current_week)
-
     # Initialize database connection
     connection = connect_to_db()
     cursor = connection.cursor(pymysql.cursors.DictCursor)
+
 
     # Loop through each game to pull relevant data
     for index, game in games_for_week.iterrows():
@@ -154,48 +214,89 @@ def generate_picks():
         # Fetch player projections for the teams
         player_projections = fetch_player_data_for_game(cursor, 'player_projections', team_abbr)
 
+        rushing_defense_historical = fetch_player_data_for_game(cursor, 'rushing_defense_historical', team_abbr)
+
+        passing_defense_historical = fetch_player_data_for_game(cursor, 'passing_defense_historical', team_abbr)
+
+        defense_vs_qb_historical = fetch_goofy_data_for_game(cursor, 'defense_vs_QB_historical', team_abbr)
+
+        defense_vs_rb_historical = fetch_goofy_data_for_game(cursor, 'defense_vs_RB_historical', team_abbr)
+
+        defense_vs_te_historical = fetch_goofy_data_for_game(cursor, 'defense_vs_TE_historical', team_abbr)
+
+        defense_vs_wr_historical = fetch_goofy_data_for_game(cursor, 'defense_vs_WR_historical', team_abbr)
+
+        insights = fetch_player_data_for_game(cursor, 'insights', team_abbr)
+
+        redzone_stats = []
+        for player in player_projections:
+            player_name = player['player_name']
+            position = player['position']
+            stats = fetch_redzone_stats(cursor, player_name, position)
+            if stats["rushing_data"] or stats["receiving_data"]:
+                redzone_stats.append({
+                    "player_name": player_name,
+                    "rushing_data": stats["rushing_data"],
+                    "receiving_data": stats["receiving_data"]
+                })
+
         # Create the prompt with all the data
         prompt = {
             "prompt": (
                 """
-                    You are a seasoned sports analyst with over 30 years of experience in analyzing sports data to beat the sportsbooks. Your task is to generate accurate and profitable sports betting picks using the following guidelines:
+                    Objective:
+                    Generate accurate and profitable sports betting picks using the provided data for each game. Focus on identifying the best opportunities across moneyline, spread, totals, and player props. Ensure the output is consistent across all games.
 
-                    Data Utilization Guidelines:
+                    Data Provided:
+                    Analyst articles related to the game
+                    Sports betting picks from analysts
+                    Current game odds
+                    Current player prop odds
+                    Player projections (e.g., projected rushing/receiving yards)
+                    Historical redzone stats from 2023
+                    historical data (per game stats) for defenses preformance against rushing and passing. Also shows the league average.
+                    team defense preformance vs a given position
+                    Insights from audio transcripts provided by NFL analysts.
 
-                    Player Projections:
-                    - Factor in opposing defense projections; a strong defense may reduce the likelihood of success for the opposing team's players.
-                    - Compare player projections across both teams; teams with more high-projected players are more likely to win.
-                    - Analyze variance between player prop lines and projections to identify potential value.
+                    Output Requirements:
+                    Primary Betting Opportunities:
 
-                    Expert Picks:
-                    - Incorporate explanations from expert picks to gain insights into team and player dynamics that could influence game and prop outcomes.
-                    - Use last10head2head data (where available) to enhance predictions based on historical matchups.
-                    - Consider trends and any available edge data to refine picks, prioritizing higher edge values for stronger betting opportunities.
+                    Moneyline, Spread, and Total Bets:
+                    Identify the best opportunities for moneyline, spread, and total bets based on the provided data.
+                    Highlight any strong trends or patterns in the data that support these bets.
+                    Player Prop Bets:
 
-                    Odds:
-                    - Monitor line movements by comparing opening lines to current odds to identify potential value or market shifts.
+                    List of Profitable Player Props:
+                    Identify as many player prop lines as possible that have a high probability of success.
+                    When suggesting an over/under prop, please specify whether to bet on the Over or the Under.
+                    Include prop bets related to projected player performance (e.g., rushing yards, receiving yards) and Anytime Touchdown Scorer probabilities.
+                    Indicate the probability of each prop hitting and provide reasoning based on the data.
+                    Utilize the defense vs position data to help aid in choosing player props for those positions.
+                    Parlay Opportunities:
 
-                    General Approach:
-                    - Combine all the data provided to identify the best betting opportunities for each game, including spreads, totals, and moneylines.
-                    - Offer multiple bet opportunities for each game, ensuring that all relevant data is incorporated, including both quantitative (e.g., projections, odds) and qualitative (e.g., expert opinions, articles) insights.
-                    - Craft a set of parlays with varying levels of risk:
-                    - A low-risk parlay with higher-probability bets.
-                    - A medium-risk parlay balancing safety and potential returns.
-                    - A high-risk parlay with bets that have lower consensus but higher potential payouts.
-                    - Explain the reasoning behind each prediction and provide probabilities for each bet being successful.
-                    - Summarize the top expert opinions and how they align or contrast with the data.
-                    - If you see high value in player props, include them in parlays as well, not just game bets like spreads/moneyline
-                    - Please provide all odds in American. Not decimal.
-                    - When converting decimal odds to American odds:
-                    - For decimal odds greater than 2.00, use the formula `(decimal odds - 1) * 100` to determine the American odds.
-                    - For decimal odds less than 2.00, use the formula `-100 / (decimal odds - 1)` to determine the American odds.
-                    - Ensure that all odds are correctly labeled as either positive or negative based on this conversion.
-                    - Line Movement Tracking: Track how betting lines have moved since they opened and whether sharp (professional) money has caused significant shifts.
-                    - Betting Units: Suggest optimal bet sizing based on confidence levels, using units rather than flat betting.
-                    - Correlation of Bets: Identify correlations between different bets (e.g., a high total points line might correlate with a high passing yards prop) to suggest correlated parlays or avoid conflicting bets.
-                    - Adjust predictions based on contextual factors such as home/away advantages, weather conditions, and team motivation or fatigue.
-                    - Apply Monte Carlo simulations to estimate the probability of various outcomes based on a range of potential inputs and scenarios.
-                    - Correlate bets to identify and recommend parlays or avoid conflicts where one outcome might negate another.
+                    Multiple Parlay Options:
+                    Create multiple parlay opportunities for each game:
+                    Low-Risk Parlay: Odds around +100, using higher-probability bets.
+                    Medium-Risk Parlay: Balancing safety and potential returns, with odds ranging from +300 to +600.
+                    High-Risk Parlay: Including bets with lower consensus but higher potential payouts, with odds up to +1000.
+                    Mix in player props with moneyline, spread, or total bets in these parlays.
+                    Summary of Picks:
+
+                    Summary Explanation:
+                    Summarize why each pick was chosen, detailing how the data supports these decisions.
+                    Include a brief analysis of how expert opinions, odds, and projections align with the picks.
+                    AI Insights:
+
+                    Speculative Picks:
+                    Based on the data provided, allow the AI to speculate and generate additional picks or parlays.
+                    These picks should be labeled as "AI Insights" and may include bets not directly backed by the provided data.
+                    Guidelines for Analysis:
+                    Player Projections: Factor in opposing defense projections, compare player projections across teams, and analyze variance between prop lines and projections.
+                    Expert Picks: Incorporate insights from expert picks, leverage last10head2head data, and prioritize higher edge values.
+                    Odds: Track line movements from opening to current odds to identify value.
+                    Formatting:
+                    Consistent Output: Ensure each game’s output follows the same structure and includes all relevant sections as outlined above.
+                    American Odds: Provide all odds in American format.
                 """
             ),
             "expert_picks": serialize_data(expert_picks),
@@ -203,11 +304,27 @@ def generate_picks():
             "game_odds": serialize_data(game_odds),
             "player_odds": serialize_data(player_odds),
             "player_projections": serialize_data(player_projections),
+            "redzone_stats": serialize_data(redzone_stats),
+            "rushing_defense_historical": serialize_data(rushing_defense_historical),
+            #"rushing_league_average": serialize_data(rushing_league_average_historical),
+            "passing_defense_historical": serialize_data(passing_defense_historical),
+            #"passing_league_average": serialize_data(passing_league_average_historical)
+            "defense_vs_qb_historical": serialize_data(defense_vs_qb_historical),
+            "defense_vs_rb_historical": serialize_data(defense_vs_rb_historical),
+            "defense_vs_te_historical": serialize_data(defense_vs_te_historical),
+            "defense_vs_wr_historical": serialize_data(defense_vs_wr_historical),
+            "analyst_insights": serialize_data(insights)
         }
+
+        with open(os.path.join(path,f"game_prompt_{away_team} {home_team}.txt"), "w", encoding="utf-8") as file:
+            json.dump(prompt, file, ensure_ascii=False, indent=4, cls=CustomJSONEncoder)
 
         # Make the API call to OpenAI
         response = client.chat.completions.create(
             model="gpt-4o-mini",
+            temperature=0.2,
+            top_p = 0.9,
+            n=1,
             messages=[{"role": "user", "content": json.dumps(prompt, cls=CustomJSONEncoder)}],
         )
 
@@ -215,22 +332,43 @@ def generate_picks():
 
         all_predictions.append(text)
 
-        with open(f"game_data_{away_team} {home_team}", "w", encoding="utf-8") as file:
+        with open(os.path.join(path,f"game_data_{away_team} {home_team}"), "w", encoding="utf-8") as file:
             file.write(text)
         
         print(f"Predicitons for {away_team} vs {home_team} written to text file.")
 
     final_prompt = (
-        "You have analyzed the predictions for all games. Based on these predictions, please do the following:\n"
-        "- Identify the best bets across all games.\n"
-        "- Create multiple parlays with varying levels of risk usings player props and game lines:\n"
-        "  - Low-risk parlay\n"
-        "  - Medium-risk parlay\n"
-        "  - High-risk parlay\n"
-        "- Provide explanations and probabilities for each parlay and all picks."
-        "- Find many possible parlays combinations using player props and game lines. I would like at least 2 low risk, 2 medium risk, and 2 high risk. Make them unique."
-        "- On top of the parlays you are already making, please create 1-3 longshot parlays. These should be parlays in the +500-+1000 odds range with the highest possible chance of success."
-        "- Please provide all odds in american. Not decimal."
+        """Final Review of Best Bets and Parlays:
+            Based on the analysis of predictions for all games, please complete the following tasks:
+
+            Identify the Best Bets:
+
+            Select 5-6 of the most confident game bets (moneyline, total, spread) for the scheduled week.
+            Choose 5-6 of the best player props.
+            Provide an in-depth explanation for each bet, highlighting how the data supports these selections.
+            Create Multiple Parlays:
+
+            Parlay Construction:
+            Low-Risk Parlays: Construct at least 2 low-risk parlays using a combination of player props and game lines.
+            Medium-Risk Parlays: Create at least 2 medium-risk parlays, balancing safety and potential returns.
+            High-Risk Parlays: Design at least 2 high-risk parlays with higher potential payouts.
+            Longshot Parlays:
+            Develop 1-3 longshot parlays with odds in the +500 to +1000 range, aiming for the highest possible chance of success.
+            Parlay Flexibility:
+            Parlays can mix player props and game bets from different games; they do not need to be same-game parlays.
+            Ensure each parlay is unique and optimizes the chances of winning.
+            Provide Explanations and Probabilities:
+
+            For each parlay and pick, provide clear explanations and probabilities to justify the selections.
+            Ensure the reasoning is data-driven and ties back to the analysis of the games.
+            Important Details:
+
+            Odds Format: Provide all odds in American format.
+            Game Association for Totals: When including over/under bets in parlays, specify the corresponding game.
+            Exclusion: Do not include exact win point margin bets.
+            Best Bets Section: Reserve this section for the most confident bets, which are backed by multiple data sources and have a high probability of success.
+            Goal:
+            Ensure all games and their respective bets are included in this analysis, offering a comprehensive and well-justified set of final predictions and parlay opportunities."""
     )
 
     combined_prompt = {
@@ -238,8 +376,14 @@ def generate_picks():
         "all_predictions": all_predictions
     }
 
+    with open("all_predictions", "w", encoding='utf-8') as file:
+        file.write(str(all_predictions))
+
     final_response = client.chat.completions.create(
         model="gpt-4o-mini",
+        temperature=0.2,
+        top_p = 0.9,
+        n=1,
         messages=[{"role": "user", "content": json.dumps(combined_prompt, cls=CustomJSONEncoder)}],
     )
 
