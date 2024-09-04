@@ -254,8 +254,8 @@ def generate_picks():
                     Current player prop odds
                     Player projections (e.g., projected rushing/receiving yards)
                     Historical redzone stats from 2023
-                    historical data (per game stats) for defenses preformance against rushing and passing. Also shows the league average.
-                    team defense preformance vs a given position
+                    Historical data (per game stats) for defenses' performance against rushing and passing, including league averages.
+                    Team defense performance vs. a given position
                     Insights from audio transcripts provided by NFL analysts.
 
                     Output Requirements:
@@ -271,7 +271,7 @@ def generate_picks():
                     When suggesting an over/under prop, please specify whether to bet on the Over or the Under.
                     Include prop bets related to projected player performance (e.g., rushing yards, receiving yards) and Anytime Touchdown Scorer probabilities.
                     Indicate the probability of each prop hitting and provide reasoning based on the data.
-                    Utilize the defense vs position data to help aid in choosing player props for those positions.
+                    Utilize the defense vs. position data to help aid in choosing player props for those positions.
                     Parlay Opportunities:
 
                     Multiple Parlay Options:
@@ -296,7 +296,9 @@ def generate_picks():
                     Odds: Track line movements from opening to current odds to identify value.
                     Formatting:
                     Consistent Output: Ensure each game’s output follows the same structure and includes all relevant sections as outlined above.
-                    American Odds: Provide all odds in American format.
+
+                    **JSON Output Requirement:**
+                    Please format the entire output as a JSON object, with keys corresponding to each section (e.g., "Primary Betting Opportunities", "Player Prop Bets", "Parlay Opportunities", "Summary of Picks", "AI Insights"). Ensure all nested elements are also structured as JSON objects or arrays as appropriate. This will facilitate storing the data directly in a database.
                 """
             ),
             "expert_picks": serialize_data(expert_picks),
@@ -332,43 +334,50 @@ def generate_picks():
 
         all_predictions.append(text)
 
-        with open(os.path.join(path,f"game_data_{away_team} {home_team}"), "w", encoding="utf-8") as file:
+        with open(os.path.join(path,f"game_data_{away_team} {home_team}.txt"), "w", encoding="utf-8") as file:
             file.write(text)
         
         print(f"Predicitons for {away_team} vs {home_team} written to text file.")
 
     final_prompt = (
         """Final Review of Best Bets and Parlays:
-            Based on the analysis of predictions for all games, please complete the following tasks:
+                Based on the analysis of predictions for all games, please complete the following tasks:
 
-            Identify the Best Bets:
+                Identify the Best Bets:
 
-            Select 5-6 of the most confident game bets (moneyline, total, spread) for the scheduled week.
-            Choose 5-6 of the best player props.
-            Provide an in-depth explanation for each bet, highlighting how the data supports these selections.
-            Create Multiple Parlays:
+                Select 5-6 of the most confident game bets (moneyline, total, spread) for the scheduled week. You can only pick either moneyline, total, or spread. Decide which one is the best bet and display that one.
+                Choose 5-6 of the best player props.
+                Provide an in-depth explanation for each bet, highlighting how the data supports these selections.
+                Star rating: Give each best bet a star rating from 1-3 stars. 3 stars being the highest confidence bet.
 
-            Parlay Construction:
-            Low-Risk Parlays: Construct at least 2 low-risk parlays using a combination of player props and game lines.
-            Medium-Risk Parlays: Create at least 2 medium-risk parlays, balancing safety and potential returns.
-            High-Risk Parlays: Design at least 2 high-risk parlays with higher potential payouts.
-            Longshot Parlays:
-            Develop 1-3 longshot parlays with odds in the +500 to +1000 range, aiming for the highest possible chance of success.
-            Parlay Flexibility:
-            Parlays can mix player props and game bets from different games; they do not need to be same-game parlays.
-            Ensure each parlay is unique and optimizes the chances of winning.
-            Provide Explanations and Probabilities:
+                Create Multiple Parlays:
 
-            For each parlay and pick, provide clear explanations and probabilities to justify the selections.
-            Ensure the reasoning is data-driven and ties back to the analysis of the games.
-            Important Details:
+                Parlay Construction:
+                Low-Risk Parlays: Construct at least 2 low-risk parlays using a combination of player props and game lines.
+                Medium-Risk Parlays: Create at least 2 medium-risk parlays, balancing safety and potential returns.
+                High-Risk Parlays: Design at least 2 high-risk parlays with higher potential payouts.
+                Longshot Parlays:
+                Develop 1-3 longshot parlays with odds in the +500 to +1000 range, aiming for the highest possible chance of success.
+                Parlay Flexibility:
+                Parlays can mix player props and game bets from different games; they do not need to be same-game parlays.
+                Ensure each parlay is unique and optimizes the chances of winning.
 
-            Odds Format: Provide all odds in American format.
-            Game Association for Totals: When including over/under bets in parlays, specify the corresponding game.
-            Exclusion: Do not include exact win point margin bets.
-            Best Bets Section: Reserve this section for the most confident bets, which are backed by multiple data sources and have a high probability of success.
-            Goal:
-            Ensure all games and their respective bets are included in this analysis, offering a comprehensive and well-justified set of final predictions and parlay opportunities."""
+                Provide Explanations and Probabilities:
+
+                For each parlay and pick, provide clear explanations and probabilities to justify the selections.
+                Ensure the reasoning is data-driven and ties back to the analysis of the games.
+
+                Important Details:
+
+                Odds Format: Provide all odds in American format.
+                Game Association for Totals: When including over/under bets in parlays, specify the corresponding game.
+                Exclusion: Do not include exact win point margin bets.
+                Best Bets Section: Reserve this section for the most confident bets, which are backed by multiple data sources and have a high probability of success.
+                Goal:
+                Ensure all games and their respective bets are included in this analysis, offering a comprehensive and well-justified set of final predictions and parlay opportunities.
+
+                **JSON Output Requirement:**
+                Please format the entire output as a JSON object, with keys corresponding to each section (e.g., "Best Bets", "Parlay Construction", "Explanations and Probabilities", "Important Details"). Ensure all nested elements are also structured as JSON objects or arrays as appropriate. This will facilitate storing the data directly in a database."""
     )
 
     combined_prompt = {
@@ -377,7 +386,7 @@ def generate_picks():
     }
 
     with open("all_predictions", "w", encoding='utf-8') as file:
-        file.write(str(all_predictions))
+        file.write(str(combined_prompt))
 
     final_response = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -388,7 +397,7 @@ def generate_picks():
     )
 
     # Write the final response to a file
-    with open("final_predictions.txt", "w", encoding="utf-8") as file:
+    with open(os.path.join(path,"final_predictions.txt"), "w", encoding="utf-8") as file:
         file.write(final_response.choices[0].message.content)
 
     print("Final predictions and parlays have been written to final_predictions.txt")
