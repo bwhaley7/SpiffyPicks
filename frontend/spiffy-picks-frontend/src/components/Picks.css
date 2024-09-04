@@ -1,0 +1,112 @@
+/* General card styles */
+.pick-card {
+    background-color: #f4f9ff;
+    padding: 15px;
+    margin: 15px auto;
+    border-radius: 8px;
+    max-width: 500px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 2px solid #003366;
+    position: relative;
+}
+
+/* Header of the card */
+.pick-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #003366;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px 8px 0 0;
+    font-size: 16px;
+}
+
+.pick-header .sport {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+.pick-header .sport::before {
+    content: '🏈';
+    margin-right: 10px;
+}
+
+.pick-header .time {
+    font-size: 14px;
+}
+
+/* Tags (Point Spread Pick, Best Bet) */
+.pick-tags {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.pick-tag {
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 3px;
+    color: white;
+    text-align: center;
+}
+
+.pick-tag.spread {
+    background-color: #17a2b8;
+}
+
+.pick-tag.best-bet {
+    background-color: #ff6f61;
+}
+
+/* Pick details with logos */
+.pick-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.pick-details h3 {
+    font-size: 22px;
+    color: #003366;
+}
+
+.pick-details p {
+    color: #555555;
+    font-size: 15px;
+    text-align: center;
+    margin: 0;
+}
+
+/* Team logos next to the matchup details */
+.team-logo {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+.matchup {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.matchup .vs {
+    margin: 0 10px;
+    font-weight: bold;
+}
+
+/* Rating section */
+.rating {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+    gap: 5px;
+}
+
+.rating .star {
+    color: #ff6f61;
+    font-size: 16px;
+}
