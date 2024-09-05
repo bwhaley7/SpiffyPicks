@@ -259,10 +259,14 @@ def generate_picks():
                     Insights from audio transcripts provided by NFL analysts.
 
                     Output Requirements:
+                    Game Info:
+                    Place the game info such as the date and time at the top of the file.
+
                     Primary Betting Opportunities:
 
                     Moneyline, Spread, and Total Bets:
                     Identify the best opportunities for moneyline, spread, and total bets based on the provided data.
+                    When outputting a total bet, please include a "game" field that shows the game it is referencing.
                     Highlight any strong trends or patterns in the data that support these bets.
                     Player Prop Bets:
 
@@ -297,8 +301,94 @@ def generate_picks():
                     Formatting:
                     Consistent Output: Ensure each game’s output follows the same structure and includes all relevant sections as outlined above.
 
-                    **JSON Output Requirement:**
-                    Please format the entire output as a JSON object, with keys corresponding to each section (e.g., "Primary Betting Opportunities", "Player Prop Bets", "Parlay Opportunities", "Summary of Picks", "AI Insights"). Ensure all nested elements are also structured as JSON objects or arrays as appropriate. This will facilitate storing the data directly in a database.
+                    JSON Output Requirements:
+                    The output must follow this strict JSON structure:
+                                        {
+                        "Game Info": {
+                            "date": "YYYY-MM-DD",
+                            "time": "HH:MM",
+                            "matchup": "Team 1 vs Team 2"
+                        },
+                        "Primary Betting Opportunities": {
+                            "Moneyline": {
+                                "best_bet": {
+                                    "team": "Team Name",
+                                    "line": Moneyline Odds,
+                                    "odds": "American Odds",
+                                    "explanation": "Detailed reasoning for this pick"
+                                }
+                            },
+                            "Spread": {
+                                "best_bet": {
+                                    "team": "Team Name",
+                                    "line": Spread Line,
+                                    "odds": "American Odds",
+                                    "explanation": "Detailed reasoning for this pick"
+                                }
+                            },
+                            "Total": {
+                                "best_bet": {
+                                    "bet": "Over or Under",
+                                    "game": team matchup of the game being played,
+                                    "line": Total Points Line,
+                                    "odds": "American Odds",
+                                    "explanation": "Detailed reasoning for this pick"
+                                }
+                            }
+                        },
+                        "Player Prop Bets": {
+                            "profitable_props": [
+                                {
+                                    "player": "Player Name",
+                                    "market": "Prop Type (e.g., Passing Yards)",
+                                    "line": Prop Line (e.g., 258.5),
+                                    "bet": "Over or Under" whether the bet is on the over or under
+                                    "odds": "American Odds",
+                                    "probability": "High/Medium/Low",
+                                    "reasoning": "Detailed reasoning for this player prop"
+                                }
+                            ]
+                        },
+                        "Parlay Opportunities": {
+                            "Low-Risk Parlay": {
+                                "combined_odds": "American Odds",
+                                "explanation": "Detailed reasoning for this parlay",
+                                "bets": [
+                                    {
+                                        "type": "Type of Bet (e.g., Spread)",
+                                        "team": "Team Name or Player",
+                                        "line": "Line Value (if applicable)",
+                                        "odds": "American Odds"
+                                    }
+                                ]
+                            },
+                            "Medium-Risk Parlay": {
+                                "combined_odds": "American Odds",
+                                "explanation": "Detailed reasoning for this parlay",
+                                "bets": [
+                                    {
+                                        "type": "Type of Bet",
+                                        "team": "Team Name or Player",
+                                        "line": "Line Value (if applicable)",
+                                        "odds": "American Odds"
+                                    }
+                                ]
+                            },
+                            "High-Risk Parlay": {
+                                "combined_odds": "American Odds",
+                                "explanation": "Detailed reasoning for this parlay",
+                                "bets": [
+                                    {
+                                        "type": "Type of Bet",
+                                        "team": "Team Name or Player",
+                                        "line": "Line Value (if applicable)",
+                                        "odds": "American Odds"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+
                 """
             ),
             "expert_picks": serialize_data(expert_picks),
@@ -318,10 +408,10 @@ def generate_picks():
             "analyst_insights": serialize_data(insights)
         }
 
-        with open(os.path.join(path,f"game_prompt_{away_team} {home_team}.txt"), "w", encoding="utf-8") as file:
-            json.dump(prompt, file, ensure_ascii=False, indent=4, cls=CustomJSONEncoder)
+        #with open(os.path.join(path,f"game_prompt_{away_team} {home_team}.txt"), "w", encoding="utf-8") as file:
+            #json.dump(prompt, file, ensure_ascii=False, indent=4, cls=CustomJSONEncoder)
 
-        # Make the API call to OpenAI
+
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             temperature=0.2,
@@ -377,7 +467,9 @@ def generate_picks():
                 Ensure all games and their respective bets are included in this analysis, offering a comprehensive and well-justified set of final predictions and parlay opportunities.
 
                 **JSON Output Requirement:**
-                Please format the entire output as a JSON object, with keys corresponding to each section (e.g., "Best Bets", "Parlay Construction", "Explanations and Probabilities", "Important Details"). Ensure all nested elements are also structured as JSON objects or arrays as appropriate. This will facilitate storing the data directly in a database."""
+                Please format the entire output as a JSON object, with keys corresponding to each section (e.g., "Best Bets", "Parlay Construction", "Explanations and Probabilities", "Important Details"). Ensure all nested elements are also structured as JSON objects or arrays as appropriate. This will facilitate storing the data directly in a database.
+                Ensure all bets have a "line" variable that holds the line of the spread, total, player prop, etc.
+                Ensure all total bets have a "game" field to show which game it is referencing."""
     )
 
     combined_prompt = {
