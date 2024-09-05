@@ -1,3 +1,7 @@
+backend/SpiffyPicksApi/bin
+backend/SpiffyPicksApi/obj
+backend/SpiffyPicksBackend/bin
+backend/SpiffyPicksBackend/obj
 scrapers/picks/__pycache__/
 scrapers/odds/__pycache__/
 scrapers/projections/__pycache__/
@@ -8,3 +12,77 @@ first_matchup_page.html
 to-add.txt
 article_debug.html
 scraped_data_output.txt
+data/historical_data_0.json
+data/historical_data_1.json
+data/scraped_data.json
+data/reformatted_odds.json
+vectorstore.pkl
+vectorstore.index
+documents.pkl
+final_predictions.txt
+game_data_ARI BUF
+game_data_BAL KC
+game_data_CAR NO
+game_data_DAL CLE
+game_data_DEN SEA
+game_data_GB PHI
+game_data_HOU IND
+game_data_JAX MIA
+game_data_LA DET
+game_data_LV LAC
+game_data_MIN NYG
+game_data_NE CIN
+game_data_NYJ SF
+game_data_PIT ATL
+game_data_TEN CHI
+game_data_WAS TB
+odds_data_debug.json
+data/analyst_articles.json
+data/expert_picks.json
+data/nfl_odds_week_1.json
+data/nfl_props_week_1.json
+data/player_projections.json
+scrapers/__pycache__/__init__.cpython-312.pyc
+scrapers/__pycache__/nfl_teams.cpython-312.pyc
+scrapers/__pycache__/teamExtractor.cpython-312.pyc
+scrapers/util/__pycache__/nfl_data_util.cpython-312.pyc
+scrapers/util/__pycache__/nfl_teams.cpython-312.pyc
+scrapers/util/__pycache__/teamExtractor.cpython-312.pyc
+game_prompt_ARI BUF.txt
+game_prompt_BAL KC.txt
+game_prompt_CAR NO.txt
+game_prompt_DAL CLE.txt
+game_prompt_DEN SEA.txt
+game_prompt_GB PHI.txt
+game_prompt_HOU IND.txt
+game_prompt_JAX MIA.txt
+game_prompt_LA DET.txt
+game_prompt_LV LAC.txt
+game_prompt_MIN NYG.txt
+game_prompt_NE CIN.txt
+game_prompt_NYJ SF.txt
+game_prompt_PIT ATL.txt
+game_prompt_TEN CHI.txt
+game_prompt_WAS TB.txt
+game.html
+game.txt
+game_picks/game_data_ARI BUF.txt
+game_picks/game_data_BAL KC.txt
+game_picks/game_data_CAR NO.txt
+game_picks/game_data_DAL CLE.txt
+game_picks/game_data_DEN SEA.txt
+game_picks/game_data_GB PHI.txt
+game_picks/game_data_HOU IND.txt
+game_picks/game_data_JAX MIA.txt
+game_picks/game_data_LA DET.txt
+game_picks/game_data_LV LAC.txt
+game_picks/game_data_MIN NYG.txt
+game_picks/game_data_NE CIN.txt
+game_picks/game_data_NYJ SF.txt
+game_picks/game_data_PIT ATL.txt
+game_picks/game_data_TEN CHI.txt
+game_picks/game_data_WAS TB.txt
+all_predictions
+article_response.txt
+ideas.txt
+.env
