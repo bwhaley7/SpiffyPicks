@@ -116,7 +116,7 @@ def download_podcast_audio(audio_url, download_folder, filename):
 
 def main():
     youtube_rss_urls = [
-        "https://www.youtube.com/feeds/videos.xml?channel_id=UCiWLfSweyRNmLpgEHekhoAg",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCiio0ydw439X13KyZgMIcHw",
         "https://www.youtube.com/feeds/videos.xml?playlist_id=PL1H2IyN18L0QLfHOno841xcWQu_Sma-CQ"
     ]
     podcast_rss_url = "https://lateround.libsyn.com/rss"
