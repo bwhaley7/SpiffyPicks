@@ -8,15 +8,64 @@
     max-width: 1200px; /* Limit the grid's width */
   }
   
+
+  .parlay-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem; /* Increase the spacing between cards */
+    padding: 1.5rem; /* Add padding to the grid */
+  }
+  
+  .parlay-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px; /* More rounded corners for a modern look */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+    padding: 1.5rem; /* More padding for breathing room */
+    transition: transform 0.2s ease-in-out; /* Smooth hover effect */
+  }
+
+  .parlay-card p {
+    font-size: 1rem; /* Make text easier to read */
+    color: #666;
+  }
+
+  .parlay-card:hover {
+    transform: translateY(-5px); /* Slight hover effect */
+  }
+  
+  .parlay-bets {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ddd;
+  }
+  .parlay-header {
+    background-color: #f7f7f7;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    font-size: 1.2rem; /* Larger text for odds */
+    font-weight: bold;
+    color: #333;
+  }
+
   /* General card styles */
   .pick-card {
-    background-color: #f4f9ff;
-    padding: 15px;
-    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border: 2px solid #003366;
+    border: 3px solid #003366;
     position: relative;
+    transition: transform 0.2s;
+    background: linear-gradient(145deg, #f8f9fa, #e9ecef); /* subtle gradient */
+    border: 1px solid #e0e0e0; /* light border */
   }
+
+  .pick-card:hover {
+    transform: translateY(-5px); /* slight lift on hover */
+  }
+
+  
   
   /* Header of the card */
   .pick-header {
@@ -65,7 +114,7 @@
   }
   
   .pick-tag.best-bet {
-    background-color: #ff6f61;
+    background-color: #FF5733;
   }
   
   /* Pick details with logos */
@@ -75,30 +124,56 @@
     align-items: center;
     margin-top: 10px;
   }
+
+  .pick-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* increase shadow on hover */
+  }
+  
+  .player-logo:hover {
+    transform: scale(1.1); /* slight zoom on player image */
+    transition: transform 0.3s ease;
+  }
   
   .pick-details h3 {
-    font-size: 22px;
-    color: #003366;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
   }
   
   .pick-details p {
-    color: #555555;
-    font-size: 15px;
-    text-align: center;
-    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+  font-size: 1em;
+  color: #555;
   }
   
   /* Team logos next to the matchup details */
   .team-logo {
-    width: 40px;
-    height: 40px;
+    width: 70px;
+    height: 70px;
     object-fit: contain;
+  }
+
+  .player-logo {
+    width: 80px; /* or whatever size you need */
+    height: 80px; /* same as width to maintain circle */
+    border-radius: 50%; /* This makes the image circular */
+    object-fit: contain; /* Ensures the image maintains aspect ratio and fills the circle */
+    image-rendering: auto; /* Prevents the image from becoming grainy when scaled */
+    display: block;
   }
   
   .matchup {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .accent-bar {
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, #ff7e5f, #feb47b); /* or team colors */
   }
   
   .matchup .vs {
