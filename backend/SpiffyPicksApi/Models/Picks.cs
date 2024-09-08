@@ -14,5 +14,7 @@ namespace SpiffyPicksApi.Models
         public required string explanation {get;set;}
         public bool is_top_pick {get;set;}
         public int nfl_week {get;set;}
+        public required string home_team {get;set;}
+        public required string away_team {get;set;}
     }
 }

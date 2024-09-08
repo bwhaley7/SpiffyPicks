@@ -7,10 +7,8 @@ namespace SpiffyPicksApi.Models
         public required string explanation {get;set;}
         public required string bets {get;set;}
         public int nfl_week {get;set;}
-        public required string first_bet_line {get;set;}
         public required string first_bet_odds {get;set;}
         public required string first_bet_type {get;set;}
-        public required string last_bet_line {get;set;}
         public required string last_bet_odds {get;set;}
         public required string last_bet_type {get;set;}
     }
